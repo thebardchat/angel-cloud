@@ -1,0 +1,612 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Users, Bot, Zap, Settings, Activity, Plus, Shield } from "lucide-react";
+
+/* =======================
+    Retro FX + Audio Hooks
+   ======================= */
+function useAudioBank(urlMap) {
+  const ctxRef = useRef(null);
+  const buffersRef = useRef({});
+  const readyRef = useRef(false);
+
+  useEffect(() => {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    ctxRef.current = ctx;
+
+    const load = async (name, url) => {
+      if (!url) return;
+      try {
+        const res = await fetch(url);
+        const arr = await res.arrayBuffer();
+        buffersRef.current[name] = await ctx.decodeAudioData(arr);
+      } catch (e) {
+        console.error(`Failed to load audio: ${name}`, e);
+      }
+    };
+
+    (async () => {
+      await Promise.all(Object.entries(urlMap || {}).map(([name, url]) => load(name, url)));
+      readyRef.current = true;
+    })();
+
+    return () => ctx.close();
+  }, [urlMap]);
+
+  const play = (name, { volume = 0.8, detune = 0 } = {}) => {
+    if (!readyRef.current || !buffersRef.current[name]) return;
+    const ctx = ctxRef.current;
+    const src = ctx.createBufferSource();
+    src.buffer = buffersRef.current[name];
+    src.detune.value = detune;
+    const gain = ctx.createGain();
+    gain.gain.value = volume;
+    src.connect(gain).connect(ctx.destination);
+    src.start();
+  };
+
+  return { play };
+}
+
+const sfx = {
+  pacman: "/audio/pacman_game_over.wav",
+  blip: "/audio/ui_blip.wav",
+  glitch: "/audio/glitch_tick.wav",
+  boot: "/audio/retro_boot.wav",
+  intro: "/audio/max_headroom_intro.wav" // Add your hosted Max Headroom-style intro sound
+};
+
+/* Glitchy Neon Pink Max Headroom Text */
+const GlitchText = ({ children, className = "" }) => {
+  const [ghost, setGhost] = useState("");
+  useEffect(() => {
+    const id = setInterval(() => {
+      setGhost(Math.random() < 0.25 ? children : "");
+    }, 400);
+    return () => clearInterval(id);
+  }, [children]);
+  return (
+    <span className={`relative inline-block glitch ${className}`} data-text={children}>
+      {children}
+      <span aria-hidden className="glitch-layer glitch-pink">{ghost}</span>
+      <span aria-hidden className="glitch-layer glitch-cyan">{ghost}</span>
+    </span>
+  );
+};
+
+/* CRT Bezel with Pink Neon Glow */
+const CRTFrame = ({ children }) => (
+  <div className="relative">
+    <div className="crt-wrap rounded-2xl overflow-hidden border-4 border-pink-500/60 shadow-[0_0_40px_rgba(255,0,255,0.3)]">
+      {children}
+    </div>
+    <div className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-pink-400/40" />
+  </div>
+);
+
+/* Q*bert-style Isometric Pink Cubes */
+const QbertLoader = ({ onComplete }) => {
+  const { play } = useAudioBank(sfx);
+  const cubes = useMemo(() => {
+    const arr = [];
+    const rows = 8, cols = 8;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) arr.push({ r, c, key: `${r}-${c}` });
+    return arr;
+  }, []);
+
+  useEffect(() => {
+    play("boot", { volume: 0.9 });
+  }, [play]);
+
+  return (
+    <div className="relative mx-auto w-[320px] h-[260px] perspective">
+      {cubes.map(({ r, c, key }) => {
+        const x = (c - r) * 24;
+        const y = (c + r) * 12;
+        const delay = (r + c) * 0.05;
+        return (
+          <div
+            key={key}
+            className="iso-cube"
+            style={{
+              transform: `translate(calc(50% + ${x}px), ${y}px) skewY(-25deg) rotate(45deg)`,
+              animationDelay: `${delay}s`
+            }}
+          />
+        );
+      })}
+      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-sm text-pink-300/80 tracking-widest animate-pulse">
+        INITIALIZING… DON’T TOUCH THAT DIAL!
+      </div>
+    </div>
+  );
+};
+
+/* Neon Card with Pink Glow */
+const NeonCard = ({ children }) => (
+  <div className="bg-gray-900/80 backdrop-blur-md p-6 rounded-lg border border-pink-500/30 hover:border-pink-400/50 transition-colors shadow-[inset_0_0_0_1px_rgba(255,0,255,0.06),0_0_40px_rgba(255,0,255,0.08)]">
+    {children}
+  </div>
+);
+
+/* Max Headroom Intro Sequence */
+const MaxHeadroomIntro = ({ onComplete }) => {
+  const { play } = useAudioBank(sfx);
+  const [phase, setPhase] = useState(0);
+
+  useEffect(() => {
+    play("intro", { volume: 1.0 });
+    const phases = [
+      { text: "W-W-WELCOME TO ANGEL CLOUD!", duration: 2000 },
+      { text: "SYSTEM BOOT… H-H-HOLD TIGHT!", duration: 1500 },
+      { text: "MAXIMUM PINK POWER ACTIVATED!", duration: 1500 }
+    ];
+    let i = 0;
+    const runPhase = () => {
+      if (i < phases.length) {
+        setPhase(i);
+        setTimeout(runPhase, phases[i].duration);
+        i++;
+      } else {
+        onComplete();
+      }
+    };
+    runPhase();
+  }, [play, onComplete]);
+
+  return (
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-black/90">
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl md:text-6xl font-bold text-pink-400 animate-glitch">
+          <GlitchText>{phase < 3 ? phases[phase].text : ""}</GlitchText>
+        </h1>
+        <div className="retro-grid opacity-50" />
+      </div>
+    </div>
+  );
+};
+
+/* =======================================
+      The Angel Cloud Dashboard (v3)
+   ======================================= */
+const AngelCloudDashboard = () => {
+  const [user, setUser] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [aiAgents, setAiAgents] = useState([]);
+  const [systemStats, setSystemStats] = useState({});
+  const [activeTab, setActiveTab] = useState("overview");
+  const [booting, setBooting] = useState(true);
+  const [showIntro, setShowIntro] = useState(true);
+  const { play } = useAudioBank(sfx);
+
+  useEffect(() => {
+    if (!booting && !showIntro) {
+      loadDashboardData();
+    }
+  }, [booting, showIntro]);
+
+  useEffect(() => {
+    const map = { Digit1: "overview", Digit2: "projects", Digit3: "agents", Digit4: "users", Digit5: "settings" };
+    const onKey = (e) => {
+      if (map[e.code]) {
+        setActiveTab(map[e.code]);
+        play("blip");
+      }
+      if (e.key.toLowerCase() === "n") {
+        play("blip");
+        createNewProject();
+      }
+      if (e.key.toLowerCase() === "a") {
+        play("blip");
+        createNewAgent();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [play]);
+
+  const loadDashboardData = async () => {
+    setUser({
+      id: "user123",
+      username: "Shane",
+      email: "shane@angelcloud.com",
+      role: "admin",
+      joinedAt: "2025-08-11"
+    });
+
+    setProjects([
+      { id: "proj1", name: "SRM Dispatch System", status: "active", type: "automation" },
+      { id: "proj2", name: "Max Headroom Avatar", status: "development", type: "ai-interface" },
+      { id: "proj3", name: "Voice Mode Integration", status: "planning", type: "voice-ai" }
+    ]);
+
+    setAiAgents([
+      { id: "agent1", name: "Claude Assistant", type: "claude", status: "online" },
+      { id: "agent2", name: "Voice Agent", type: "voice", status: "idle" },
+      { id: "agent3", name: "Automation Bot", type: "custom", status: "working" }
+    ]);
+
+    setSystemStats({
+      totalUsers: 12,
+      activeProjects: 8,
+      aiAgentsOnline: 15,
+      systemUptime: "99.9%"
+    });
+  };
+
+  const createNewProject = () => {
+    const projectName = window.prompt("Enter project name:");
+    if (projectName) {
+      setProjects((p) => [...p, { id: `proj${Date.now()}`, name: projectName, status: "planning", type: "custom" }]);
+    }
+  };
+
+  const createNewAgent = () => {
+    const agentName = window.prompt("Enter AI agent name:");
+    if (agentName) {
+      setAiAgents((a) => [...a, { id: `agent${Date.now()}`, name: agentName, type: "custom", status: "idle" }]);
+    }
+  };
+
+  const getStatusColor = (status) => ({
+    active: "bg-pink-500",
+    online: "bg-pink-500",
+    working: "bg-cyan-500",
+    development: "bg-yellow-400",
+    idle: "bg-gray-400",
+    planning: "bg-purple-500"
+  }[status] || "bg-gray-400");
+
+  const TabButton = ({ id, icon: Icon, label }) => (
+    <button
+      onClick={() => {
+        setActiveTab(id);
+        play("blip");
+      }}
+      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+        activeTab === id ? "bg-pink-600 text-white" : "text-pink-200/80 hover:bg-pink-700/40"
+      }`}
+    >
+      <Icon size={22} />
+      <span>{label}</span>
+    </button>
+  );
+
+  return (
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Animated Pink Grid Backdrop */}
+      <div className="absolute inset-0 retro-grid opacity-40" />
+
+      <CRTFrame>
+        {/* Header */}
+        <header className="bg-gray-900/80 border-b border-pink-500/30 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="text-3xl font-bold text-pink-400 tracking-wider">
+              <GlitchText>⚡ ANGEL CLOUD</GlitchText>
+            </div>
+            <div className="text-sm text-pink-200/70">NEON HUB v3.0</div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="text-sm">
+              <span className="text-pink-200/70">Yo, </span>
+              <span className="text-pink-300 font-medium">{user?.username || "Neon Hacker"}</span>
+            </div>
+            {user?.role === "admin" && (
+              <div className="flex items-center space-x-1 bg-pink-700/60 px-2 py-1 rounded text-xs border border-pink-300/40">
+                <Shield size={14} />
+                <span>Admin</span>
+              </div>
+            )}
+          </div>
+        </header>
+
+        {showIntro ? (
+          <MaxHeadroomIntro onComplete={() => {
+            setShowIntro(false);
+            setTimeout(() => setBooting(false), 2000);
+          }} />
+        ) : booting ? (
+          <div className="p-12">
+            <QbertLoader onComplete={() => setBooting(false)} />
+          </div>
+        ) : (
+          <div className="flex">
+            {/* Sidebar */}
+            <nav className="w-64 bg-gray-950/70 min-h-[calc(100vh-64px)] p-4 border-r border-pink-500/30">
+              <div className="space-y-2">
+                <TabButton id="overview" icon={Activity} label="Overview (1)" />
+                <TabButton id="projects" icon={Zap} label="Projects (2)" />
+                <TabButton id="agents" icon={Bot} label="AI Agents (3)" />
+                <TabButton id="users" icon={Users} label="Users (4)" />
+                <TabButton id="settings" icon={Settings} label="Settings (5)" />
+              </div>
+              <div className="mt-6 text-xs text-pink-200/60">
+                Shortcuts: <kbd>N</kbd> New Project • <kbd>A</kbd> New Agent
+              </div>
+            </nav>
+
+            {/* Main */}
+            <main className="flex-1 p-8 scanline-content">
+              {activeTab === "overview" && (
+                <div className="space-y-8">
+                  <h1 className="text-4xl font-bold">
+                    <GlitchText>Neon Cloud Hub</GlitchText>
+                  </h1>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[
+                      { label: "Total Users", value: systemStats.totalUsers },
+                      { label: "Active Projects", value: systemStats.activeProjects },
+                      { label: "AI Agents Online", value: systemStats.aiAgentsOnline },
+                      { label: "System Uptime", value: systemStats.systemUptime }
+                    ].map((stat, i) => (
+                      <NeonCard key={i}>
+                        <div className="text-3xl font-bold text-pink-300">{stat.value || "N/A"}</div>
+                        <div className="text-sm text-pink-200/80">{stat.label}</div>
+                      </NeonCard>
+                    ))}
+                  </div>
+
+                  {/* Quick Actions */}
+                  <NeonCard>
+                    <h2 className="text-xl font-semibold mb-4 text-pink-300">Quick Actions</h2>
+                    <div className="flex flex-wrap gap-4">
+                      <button
+                        onClick={() => {
+                          play("blip");
+                          createNewProject();
+                        }}
+                        className="flex items-center space-x-2 bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg transition-colors border border-pink-300/40"
+                      >
+                        <Plus size={16} />
+                        <span>New Project</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          play("blip");
+                          createNewAgent();
+                        }}
+                        className="flex items-center space-x-2 bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg transition-colors border border-cyan-300/40"
+                      >
+                        <Plus size={16} />
+                        <span>New AI Agent</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          play("pacman", { volume: 1.0 });
+                          alert("SYSTEM: Pac-Man death wail activated! Plug in your SFX URLs for max retro vibes.");
+                        }}
+                        className="flex items-center space-x-2 bg-red-700 hover:bg-red-800 px-4 py-2 rounded-lg transition-colors border border-red-300/40"
+                      >
+                        <Zap size={16} />
+                        <span>Panic Test</span>
+                      </button>
+                    </div>
+                  </NeonCard>
+                </div>
+              )}
+
+              {activeTab === "projects" && (
+                <div className="space-y-8">
+                  <div className="flex justify-between items-center">
+                    <h1 className="text-4xl font-bold">
+                      <GlitchText>Projects</GlitchText>
+                    </h1>
+                    <button
+                      onClick={() => {
+                        play("blip");
+                        createNewProject();
+                      }}
+                      className="flex items-center space-x-2 bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg transition-colors border border-pink-300/40"
+                    >
+                      <Plus size={16} />
+                      <span>New Project</span>
+                    </button>
+                  </div>
+
+                  <div className="grid gap-4">
+                    {projects.map((project) => (
+                      <NeonCard key={project.id}>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-lg font-semibold text-pink-300">{project.name}</h3>
+                            <p className="text-pink-200/80 text-sm capitalize">{project.type}</p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-3 h-3 rounded-full ${getStatusColor(project.status)}`}></div>
+                            <span className="text-sm capitalize">{project.status}</span>
+                          </div>
+                        </div>
+                      </NeonCard>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "agents" && (
+                <div className="space-y-8">
+                  <div className="flex justify-between items-center">
+                    <h1 className="text-4xl font-bold">
+                      <GlitchText>AI Agents</GlitchText>
+                    </h1>
+                    <button
+                      onClick={() => {
+                        play("blip");
+                        createNewAgent();
+                      }}
+                      className="flex items-center space-x-2 bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg transition-colors border border-cyan-300/40"
+                    >
+                      <Plus size={16} />
+                      <span>New Agent</span>
+                    </button>
+                  </div>
+
+                  <div className="grid gap-4">
+                    {aiAgents.map((agent) => (
+                      <NeonCard key={agent.id}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Bot size={24} className="text-pink-300" />
+                            <div>
+                              <h3 className="text-lg font-semibold text-pink-300">{agent.name}</h3>
+                              <p className="text-pink-200/80 text-sm capitalize">{agent.type}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-3 h-3 rounded-full ${getStatusColor(agent.status)}`}></div>
+                            <span className="text-sm capitalize">{agent.status}</span>
+                          </div>
+                        </div>
+                      </NeonCard>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "users" && (
+                <div className="space-y-8">
+                  <h1 className="text-4xl font-bold">
+                    <GlitchText>Users</GlitchText>
+                  </h1>
+                  <NeonCard>
+                    <div className="text-pink-200/80 text-sm">
+                      Coming soon: Neon ID cards with 80s-style pixel trails and synthwave flair!
+                    </div>
+                  </NeonCard>
+                </div>
+              )}
+
+              {activeTab === "settings" && (
+                <div className="space-y-8">
+                  <h1 className="text-4xl font-bold">
+                    <GlitchText>Settings</GlitchText>
+                  </h1>
+                  <NeonCard>
+                    <div className="text-sm text-pink-200/80 space-y-4">
+                      <p>Crank up the retro vibes by wiring your sound files in the <code>sfx</code> map:</p>
+                      <pre className="bg-black/70 p-4 rounded border border-pink-500/30 overflow-auto text-pink-300">
+{`const sfx = {
+  pacman: "/audio/pacman_game_over.wav",
+  blip: "/audio/ui_blip.wav",
+  glitch: "/audio/glitch_tick.wav",
+  boot: "/audio/retro_boot.wav",
+  intro: "/audio/max_headroom_intro.wav"
+};`}
+                      </pre>
+                      <p>Scanlines, CRT warp, and glitch effects are baked in via CSS below. Go wild!</p>
+                    </div>
+                  </NeonCard>
+                </div>
+              )}
+            </main>
+          </div>
+        )}
+      </CRTFrame>
+
+      {/* Retro Pink Style Block */}
+      <style>{`
+        /* Animated Pink Neon Grid Background */
+        .retro-grid {
+          background:
+            radial-gradient(circle at 50% 0%, rgba(255,0,255,0.12), transparent 50%),
+            linear-gradient(rgba(255,0,255,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,0,255,0.1) 1px, transparent 1px);
+          background-size: 100% 100%, 50px 50px, 50px 50px;
+          animation: gridFloat 15s linear infinite;
+        }
+        @keyframes gridFloat {
+          0% { background-position: 0 0, 0 0, 0 0; }
+          100% { background-position: 0 0, 0 50px, 50px 0; }
+        }
+
+        /* CRT Scanlines + Pink Glow */
+        .crt-wrap {
+          position: relative;
+        }
+        .crt-wrap::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background:
+            repeating-linear-gradient(
+              to bottom,
+              rgba(0,0,0,0.2) 0px,
+              rgba(0,0,0,0.2) 1px,
+              rgba(0,0,0,0.05) 2px,
+              rgba(0,0,0,0.05) 3px
+            );
+          mix-blend-mode: multiply;
+          filter: contrast(115%) brightness(110%);
+        }
+        .scanline-content {
+          transform: perspective(1000px) translateZ(0) scale(1.005);
+        }
+
+        /* Glitch Text with Max Headroom Vibes */
+        .glitch {
+          position: relative;
+          text-shadow:
+            0 0 3px rgba(255,0,255,0.9),
+            0 0 15px rgba(255,0,255,0.5);
+        }
+        .glitch-layer {
+          position: absolute;
+          left: 0; top: 0;
+          width: 100%;
+          clip-path: polygon(0 2%, 100% 0, 100% 100%, 0 98%);
+          pointer-events: none;
+        }
+        .glitch-pink {
+          color: #ff69b4;
+          transform: translate(2px, 1px);
+          animation: glitchShift 1.8s infinite;
+          text-shadow: -1px 0 rgba(0,255,255,0.8);
+        }
+        .glitch-cyan {
+          color: #00ffff;
+          transform: translate(-2px, -1px);
+          animation: glitchShift 2.2s infinite;
+          text-shadow: 1px 0 rgba(255,0,255,0.8);
+        }
+        @keyframes glitchShift {
+          0% { transform: translate(0,0); opacity: 0.7; }
+          10% { transform: translate(3px,-2px); }
+          20% { transform: translate(-3px,2px); }
+          30% { transform: translate(1px,0); opacity: 1; }
+          100% { transform: translate(0,0); opacity: 0.7; }
+        }
+
+        /* Q*bert Pink Cubes */
+        .perspective { perspective: 1000px; }
+        .iso-cube {
+          position: absolute;
+          width: 28px; height: 28px;
+          background:
+            linear-gradient(135deg, rgba(255,0,255,0.9), rgba(255,0,255,0.3));
+          border: 1px solid rgba(255,0,255,0.5);
+          box-shadow:
+            inset 0 0 12px rgba(255,0,255,0.6),
+            0 8px 16px rgba(255,0,255,0.2);
+          border-radius: 3px;
+          animation: isoPulse 1.2s ease-in-out infinite;
+        }
+        @keyframes isoPulse {
+          0%, 100% { filter: brightness(0.85); transform-origin: center; }
+          50% { filter: brightness(1.3) contrast(1.15); }
+        }
+
+        /* Intro Animation */
+        .animate-glitch {
+          animation: glitchFlash 0.3s infinite alternate;
+        }
+        @keyframes glitchFlash {
+          0% { filter: brightness(1); }
+          100% { filter: brightness(1.2) contrast(1.1); }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default AngelCloudDashboard;
