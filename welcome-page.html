@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angel Cloud - Personal World Builder</title>
+    <link rel="stylesheet" href="styles/welcome.css">
+
+</head>
+<body>
+    <header class="header">
+        <div class="logo-small">ANGEL CLOUD</div>
+        <div class="user-info">
+            <span>QuantumDreamer</span>
+            <div class="halo-count">✨ 247 Halos</div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="builder-panel">
+            <h1 class="panel-title">🌍 BUILD YOUR WORLD</h1>
+            
+            <div class="form-section">
+                <h2 class="section-title">🏷️ World Identity</h2>
+                <div class="form-group">
+                    <label for="worldName">Your World Name</label>
+                    <input type="text" id="worldName" placeholder="e.g., Quantum Sanctuary, Digital Haven, Cyber Oasis">
+                </div>
+                <div class="form-group">
+                    <label for="worldMission">World Mission Statement</label>
+                    <textarea id="worldMission" placeholder="Describe the purpose and focus of your Angel Cloud branch..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">🎨 Visual Theme</h2>
+                <div class="form-group">
+                    <label>Choose Your Color Palette</label>
+                    <div class="color-palette">
+                        <div class="palette-option palette-classic selected" data-palette="classic">
+                            <span>Classic<br>Green</span>
+                        </div>
+                        <div class="palette-option palette-ocean" data-palette="ocean">
+                            <span>Ocean<br>Blue</span>
+                        </div>
+                        <div class="palette-option palette-sunset" data-palette="sunset">
+                            <span>Sunset<br>Orange</span>
+                        </div>
+                        <div class="palette-option palette-lavender" data-palette="lavender">
+                            <span>Lavender<br>Purple</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">🤖 AI Personality Blend</h2>
+                <div class="personality-sliders">
+                    <div class="slider-group">
+                        <span class="slider-label">Empathy</span>
+                        <input type="range" id="empathy" min="0" max="100" value="75">
+                        <span class="slider-value">75%</span>
+                    </div>
+                    <div class="slider-group">
+                        <span class="slider-label">Wisdom</span>
+                        <input type="range" id="wisdom" min="0" max="100" value="80">
+                        <span class="slider-value">80%</span>
+                    </div>
+                    <div class="slider-group">
+                        <span class="slider-label">Playfulness</span>
+                        <input type="range" id="playfulness" min="0" max="100" value="60">
+                        <span class="slider-value">60%</span>
+                    </div>
+                    <div class="slider-group">
+                        <span class="slider-label">Directness</span>
+                        <input type="range" id="directness" min="0" max="100" value="70">
+                        <span class="slider-value">70%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">👥 Community Focus</h2>
+                <div class="form-group">
+                    <label for="focusArea">Primary Support Area</label>
+                    <select id="focusArea">
+                        <option value="general">General Mental Wellness</option>
+                        <option value="anxiety">Anxiety & Stress Relief</option>
+                        <option value="depression">Depression Support</option>
+                        <option value="creativity">Creative Expression</option>
+                        <option value="relationships">Relationship Guidance</option>
+                        <option value="career">Career & Purpose</option>
+                        <option value="spiritual">Spiritual Growth</option>
+                        <option value="teens">Teen Support</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="welcomeMessage">Your World's Welcome Message</label>
+                    <textarea id="welcomeMessage" placeholder="Write a welcome message for visitors to your world..."></textarea>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary">Save Draft</button>
+                <button class="btn btn-primary" onclick="submitForApproval()">Submit for Approval</button>
+            </div>
+        </div>
+
+        <div class="preview-panel">
+            <h2 class="preview-title">🔮 Live Preview</h2>
+            
+            <div class="world-preview" id="worldPreview">
+                <div class="preview-world-name" id="previewName">Your Quantum Sanctuary</div>
+                <div style="text-align: center; opacity: 0.8; margin: 1rem 0;">
+                    <em id="previewMission">A digital haven for souls seeking connection and growth...</em>
+                </div>
+                <div class="preview-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">AI Blend</div>
+                        <div class="stat-value" id="previewBlend">Balanced</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Focus</div>
+                        <div class="stat-value" id="previewFocus">General</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-status">
+                <div class="filter-header">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <strong>Core Values Filter</strong>
+                </div>
+                <div id="filterMessage">Ready for review by Home Base</div>
+            </div>
+
+            <div style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                <p>🛡️ All worlds maintain Angel Cloud's positive-only environment</p>
+                <p>🔗 Connected to Home Base network</p>
+                <p>⚡ Powered by Core Sentiment Engine</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/welcome.js"></script>
+
+</body>
+</html>
+
