@@ -27,7 +27,7 @@
             border-bottom: 2px solid #00ff41;
             padding: 1rem 2rem;
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
             position: sticky;
