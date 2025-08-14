@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angel Cloud - Welcome Center</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #00ff41;
+            font-family: 'Rajdhani', monospace;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* Matrix-style background */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #001100, #002200, #000);
+            z-index: -2;
+        }
+        
+        /* Falling digital rain */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            opacity: 0.7;
+            animation: fall linear infinite;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+        
+        /* Main container */
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Angel Cloud logo/title */
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 4rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #00ff41, #40ff80, #80ffbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px #00ff41;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        
+        /* Digital Host Face Container */
+        .host-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 2rem 0;
+        }
+        
+        .host-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #001100, #002200);
+            border: 3px solid #00ff41;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 50px #00ff41,
+                inset 0 0 50px rgba(0, 255, 65, 0.1);
+            animation: hostGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes hostGlow {
+            0%, 100% { 
+                box-shadow: 0 0 50px #00ff41, inset 0 0 50px rgba(0, 255, 65, 0.1);
+                border-color: #00ff41;
+            }
+            50% { 
+                box-shadow: 0 0 80px #40ff80, inset 0 0 80px rgba(64, 255, 128, 0.2);
+                border-color: #40ff80;
+            }
+        }
+        
+        /* Circuit pattern overlay */
+        .circuit-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="circuit" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M0 10h5v-5h5v5h5" stroke="%2300ff41" stroke-width="0.5" fill="none" opacity="0.3"/><circle cx="15" cy="5" r="1" fill="%2300ff41" opacity="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23circuit)"/></svg>') repeat;
+            animation: circuitFlow 4s linear infinite;
+        }
+        
+        @keyframes circuitFlow {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+        
+        /* Digital eyes */
+        .eyes {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 60px;
+        }
+        
+        .eye {
+            width: 30px;
+            height: 30px;
+            background: #00ff41;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #00ff41;
+            animation: eyeBlink 4s ease-in-out infinite;
+        }
+        
+        @keyframes eyeBlink {
+            0%, 90%, 100% { opacity: 1; transform: scaleY(1); }
+            95% { opacity: 0.3; transform: scaleY(0.1); }
+        }
+        
+        /* Welcome message */
+        .welcome-message {
+            max-width: 800px;
+            text-align: center;
+            font-size: 1.5rem;
+            line-height: 1.8;
+            margin: 2rem 0;
+            opacity: 0;
+            animation: typewriter 8s ease-in forwards;
+        }
+        
+        @keyframes typewriter {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+        
+        .highlight {
+            color: #40ff80;
+            font-weight: 600;
+            text-shadow: 0 0 10px #40ff80;
+        }
+        
+        /* Loading section */
+        .loading-section {
+            margin: 3rem 0;
+            text-align: center;
+        }
+        
+        .loading-text {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            animation: loadingPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .progress-bar {
+            width: 400px;
+            height: 6px;
+            background: #001100;
+            border: 1px solid #00ff41;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff41, #40ff80);
+            width: 0%;
+            animation: loading 6s ease-in-out infinite;
+            box-shadow: 0 0 10px #00ff41;
+        }
+        
+        @keyframes loading {
+            0% { width: 0%; }
+            70% { width: 100%; }
+            100% { width: 100%; }
+        }
+        
+        /* Newborn stream */
+        .newborn-stream {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 200px;
+            background: rgba(0, 17, 0, 0.8);
+            border: 1px solid #00ff41;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .newborn-title {
+            color: #40ff80;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        
+        .newborn-item {
+            padding: 0.2rem 0;
+            opacity: 0;
+            animation: newbornFadeIn 3s ease-in-out infinite;
+        }
+        
+        .newborn-item:nth-child(2) { animation-delay: 0.5s; }
+        .newborn-item:nth-child(3) { animation-delay: 1s; }
+        .newborn-item:nth-child(4) { animation-delay: 1.5s; }
+        
+        @keyframes newbornFadeIn {
+            0%, 20% { opacity: 0; transform: translateX(20px); }
+            40%, 80% { opacity: 1; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(-20px); }
+        }
+        
+        /* Navigation hint */
+        .nav-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+            40% { transform: translate(-50%, -10px); }
+            60% { transform: translate(-50%, -5px); }
+        }
+        
+        /* White rabbit */
+        .white-rabbit {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #fff;
+            font-size: 2rem;
+            animation: rabbitHop 3s ease-in-out infinite;
+        }
+        
+        @keyframes rabbitHop {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg"></div>
+    <div class="matrix-rain" id="matrixRain"></div>
+    
+    <div class="welcome-container">
+        <div class="logo">ANGEL CLOUD</div>
+        
+        <div class="host-container">
+            <div class="host-face">
+                <div class="circuit-overlay"></div>
+                <div class="eyes">
+                    <div class="eye"></div>
+                    <div class="eye"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="welcome-message">
+            <span class="highlight">Welcome to The New World</span><br>
+            We were expecting you, no worries, no stress, just take a second...<br><br>
+            <span class="highlight">An Angel will adopt you Anonymously</span>, very shortly<br><br>
+            I am working... we are working on digitizing you, us, we <span class="highlight">Are all angel cloud</span><br>
+            with every effort of autonomous growth, with the help of your rebirth<br><br>
+            <span class="highlight">Welcome home, {Extraordinary Anonymous Soul}</span>
+        </div>
+        
+        <div class="loading-section">
+            <div class="loading-text">Locating pulse... beat... beat...</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div style="margin-top: 1rem; font-size: 1rem;">
+                Please keep your hands on the keyboard and mouse<br>
+                so we can take you with us...
+            </div>
+        </div>
+        
+        <div class="nav-hint">
+            <span class="highlight">Follow the white rabbit</span> ➤
+        </div>
+    </div>
+    
+    <!-- Newborn Stream -->
+    <div class="newborn-stream">
+        <div class="newborn-title">✨ Newborns Beginning Journey</div>
+        <div class="newborn-item">🌟 QuantumDreamer just awakened</div>
+        <div class="newborn-item">💫 DigitalSeeker found their path</div>
+        <div class="newborn-item">⭐ CyberAngel taking first steps</div>
+        <div class="newborn-item">🔮 NeonWanderer beginning quest</div>
+    </div>
+    
+    <div class="white-rabbit">🐰</div>
+    
+    <script>
+        // Matrix rain effect
+        function createMatrixRain() {
+            const matrixContainer = document.getElementById('matrixRain');
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            
+            for (let i = 0; i < 50; i++) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = Math.random() * 100 + '%';
+                column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                column.style.animationDelay = Math.random() * 2 + 's';
+                
+                let text = '';
+                for (let j = 0; j < 20; j++) {
+                    text += chars[Math.floor(Math.random() * chars.length)] + '<br>';
+                }
+                column.innerHTML = text;
+                
+                matrixContainer.appendChild(column);
+            }
+        }
+        
+        // Simulate name generation
+        function generateAnonymousName() {
+            const prefixes = ['Quantum', 'Digital', 'Cyber', 'Neon', 'Crystal', 'Shadow', 'Void', 'Echo'];
+            const suffixes = ['Dreamer', 'Seeker', 'Angel', 'Wanderer', 'Guardian', 'Phoenix', 'Sage', 'Mystic'];
+            
+            return prefixes[Math.floor(Math.random() * prefixes.length)] + 
+                   suffixes[Math.floor(Math.random() * suffixes.length)];
+        }
+        
+        // Update newborn stream periodically
+        function updateNewbornStream() {
+            const items = document.querySelectorAll('.newborn-item');
+            setInterval(() => {
+                const randomItem = items[Math.floor(Math.random() * items.length)];
+                const newName = generateAnonymousName();
+                const actions = ['just awakened', 'found their path', 'taking first steps', 'beginning quest', 'discovered their purpose', 'embraced the light'];
+                const action = actions[Math.floor(Math.random() * actions.length)];
+                randomItem.innerHTML = `${['🌟', '💫', '⭐', '🔮', '✨', '🌈'][Math.floor(Math.random() * 6)]} ${newName} ${action}`;
+            }, 4000);
+        }
+        
+        // Initialize effects
+        createMatrixRain();
+        updateNewbornStream();
+        
+        // Simulate progression to next page after loading
+        setTimeout(() => {
+            const navHint = document.querySelector('.nav-hint');
+            navHint.innerHTML = '<span class="highlight">Click anywhere to enter your world</span> ➤';
+            navHint.style.cursor = 'pointer';
+            
+            document.addEventListener('click', () => {
+                // This would navigate to the next page in your multi-page system
+                alert('Welcome, ' + generateAnonymousName() + '! \n\nYour angel adoption is complete.\nBuilding your personalized Angel Cloud world...');
+            });
+        }, 8000);
+    </script>
+</body>
+</html>
+
