@@ -399,12 +399,12 @@
         </div>
     </header>
 
-    <div class="main-container">
+    <main class="main-container">
         <div class="builder-panel">
             <h1 class="panel-title">🌍 BUILD YOUR WORLD</h1>
-            
-            <div class="form-section">
-                <h2 class="section-title">🏷️ World Identity</h2>
+
+            <section class="form-section" aria-labelledby="world-identity-title">
+                <h2 id="world-identity-title" class="section-title">🏷️ World Identity</h2>
                 <div class="form-group">
                     <label for="worldName">Your World Name</label>
                     <input type="text" id="worldName" placeholder="e.g., Quantum Sanctuary, Digital Haven, Cyber Oasis">
@@ -413,10 +413,10 @@
                     <label for="worldMission">World Mission Statement</label>
                     <textarea id="worldMission" placeholder="Describe the purpose and focus of your Angel Cloud branch..."></textarea>
                 </div>
-            </div>
+            </section>
 
-            <div class="form-section">
-                <h2 class="section-title">🎨 Visual Theme</h2>
+            <section class="form-section" aria-labelledby="visual-theme-title">
+                <h2 id="visual-theme-title" class="section-title">🎨 Visual Theme</h2>
                 <div class="form-group">
                     <label>Choose Your Color Palette</label>
                     <div class="color-palette">
@@ -434,10 +434,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="form-section">
-                <h2 class="section-title">🤖 AI Personality Blend</h2>
+            <section class="form-section" aria-labelledby="ai-blend-title">
+                <h2 id="ai-blend-title" class="section-title">🤖 AI Personality Blend</h2>
                 <div class="personality-sliders">
                     <div class="slider-group">
                         <span class="slider-label">Empathy</span>
@@ -460,10 +460,10 @@
                         <span class="slider-value">70%</span>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="form-section">
-                <h2 class="section-title">👥 Community Focus</h2>
+            <section class="form-section" aria-labelledby="community-focus-title">
+                <h2 id="community-focus-title" class="section-title">👥 Community Focus</h2>
                 <div class="form-group">
                     <label for="focusArea">Primary Support Area</label>
                     <select id="focusArea">
@@ -481,7 +481,7 @@
                     <label for="welcomeMessage">Your World's Welcome Message</label>
                     <textarea id="welcomeMessage" placeholder="Write a welcome message for visitors to your world..."></textarea>
                 </div>
-            </div>
+            </section>
 
             <div class="action-buttons">
                 <button class="btn btn-secondary">Save Draft</button>
@@ -523,7 +523,7 @@
                 <p>⚡ Powered by Core Sentiment Engine</p>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         // Real-time preview updates
