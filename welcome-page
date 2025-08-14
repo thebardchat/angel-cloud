@@ -356,7 +356,32 @@
             background: rgba(0, 255, 65, 0.1);
             transform: translateY(-2px);
         }
-        
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background: linear-gradient(45deg, #00ff41, #40ff80);
+            color: #000;
+            text-align: center;
+            border-radius: 8px;
+            padding: 1rem;
+            position: fixed;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px #00ff41;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0s linear 0.5s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .main-container {
@@ -525,6 +550,8 @@
         </div>
     </div>
 
+    <div id="toast"></div>
+
     <script>
         // Real-time preview updates
         function updatePreview() {
@@ -598,7 +625,16 @@
         document.getElementById('worldName').addEventListener('input', updatePreview);
         document.getElementById('worldMission').addEventListener('input', updatePreview);
         document.getElementById('focusArea').addEventListener('change', updatePreview);
-        
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
         // Submit for approval function
         function submitForApproval() {
             const statusIndicator = document.getElementById('statusIndicator');
@@ -615,10 +651,11 @@
             setTimeout(() => {
                 statusIndicator.className = 'status-indicator status-approved';
                 filterMessage.textContent = '✅ Approved! Your world is being built...';
-                
+
                 // Show success message
                 setTimeout(() => {
-                    alert('🎉 Congratulations!\n\nYour world "' + (document.getElementById('worldName').value || 'Your Quantum Sanctuary') + '" has been approved!\n\n🌍 Building your personalized Angel Cloud branch...\n💰 +50 Halos awarded for world creation\n🔗 You can now invite others to your world');
+                    const worldName = document.getElementById('worldName').value || 'Your Quantum Sanctuary';
+                    showToast(`🎉 ${worldName} has been approved! +50 Halos awarded.`);
                 }, 1000);
             }, 4000);
         }
