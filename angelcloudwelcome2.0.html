@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angel Cloud - Welcome Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c1222 0%, #1a2332 50%, #0c1222 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-top: 30px;
+        }
+
+        .angel-cloud-logo {
+            font-size: 4rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #00ccff, #0088ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #00ff88;
+            margin-bottom: 40px;
+        }
+
+        .welcome-center {
+            background: rgba(26, 35, 50, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .shane-brain-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .shane-brain-title {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .brain-icon {
+            width: 60px;
+            height: 60px;
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0% { filter: hue-rotate(0deg); }
+            25% { filter: hue-rotate(90deg); transform: translateX(2px); }
+            50% { filter: hue-rotate(180deg); }
+            75% { filter: hue-rotate(270deg); transform: translateX(-2px); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .newborn-process {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .process-step {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .process-step:hover {
+            background: rgba(0, 255, 136, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .step-number {
+            font-size: 2rem;
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .step-description {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .begin-journey-btn {
+            background: linear-gradient(45deg, #00ff88, #0088ff);
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.3rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .begin-journey-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.6);
+            background: linear-gradient(45deg, #0088ff, #00ff88);
+        }
+
+        .halo-system {
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(0, 136, 255, 0.1);
+            border-left: 4px solid #0088ff;
+            border-radius: 10px;
+        }
+
+        .halo-title {
+            color: #0088ff;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .security-notice {
+            background: rgba(255, 136, 0, 0.1);
+            border: 1px solid #ff8800;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .security-title {
+            color: #ff8800;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .angel-cloud-logo {
+                font-size: 2.5rem;
+            }
+            .shane-brain-title {
+                font-size: 2rem;
+                flex-direction: column;
+            }
+            .welcome-center {
+                padding: 20px;
+            }
+        }
+
+        .matrix-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100px;
+            font-size: 20px;
+            color: #00ff88;
+            opacity: 0.3;
+            animation: matrix-fall linear infinite;
+        }
+
+        @keyframes matrix-fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg">
+        <div class="matrix-rain" id="matrixRain"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="angel-cloud-logo">ANGEL CLOUD</h1>
+            <p class="subtitle">Elevating Humanity Through Collaboration</p>
+        </header>
+
+        <div class="welcome-center">
+            <div class="shane-brain-section">
+                <h2 class="shane-brain-title">
+                    SHANE BRAIN
+                    <div class="brain-icon">🧠</div>
+                    WELCOME CENTER
+                </h2>
+                <p style="color: #ccc; font-size: 1.1rem; margin-top: 15px;">
+                    Your AI-Human Guide to Digital Transformation
+                </p>
+            </div>
+
+            <div class="security-notice">
+                <div class="security-title">🛡️ SECURE CHECKPOINT ACTIVE</div>
+                <p style="color: #ccc;">
+                    All entries pass through blockchain-verified security protocols. Your safety is our priority.
+                </p>
+            </div>
+
+            <div class="newborn-process">
+                <div class="process-step">
+                    <div class="step-number">01</div>
+                    <div class="step-title">New Born Registration</div>
+                    <div class="step-description">
+                        Enter the incubation chamber where your digital identity is carefully crafted and verified.
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">02</div>
+                    <div class="step-title">Identity Verification</div>
+                    <div class="step-description">
+                        Multi-layer authentication ensures you are who you claim to be. Real humans building real trust.
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">03</div>
+                    <div class="step-title">Avatar Creation</div>
+                    <div class="step-description">
+                        Design your 3D presence that will represent you across all Angel Cloud worlds.
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">04</div>
+                    <div class="step-title">Halo Initiation</div>
+                    <div class="step-description">
+                        Begin earning trust through positive contributions. Your Halo score unlocks new possibilities.
+                    </div>
+                </div>
+            </div>
+
+            <div class="halo-system">
+                <div class="halo-title">The Halo Trust System</div>
+                <p style="color: #ccc; line-height: 1.6;">
+                    Earn Halos by helping others, building constructively, and maintaining community safety. 
+                    Higher Halo counts unlock world-building privileges and leadership opportunities.
+                </p>
+            </div>
+
+            <div class="cta-section">
+                <button class="begin-journey-btn" onclick="beginJourney()">
+                    BEGIN YOUR TRANSFORMATION
+                </button>
+                <p style="color: #999; margin-top: 20px;">
+                    Join millions working together to build a better digital society
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix rain effect
+        function createMatrixRain() {
+            const container = document.getElementById('matrixRain');
+            const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            
+            for (let i = 0; i < 50; i++) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = Math.random() * 100 + '%';
+                column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                column.style.animationDelay = Math.random() * 2 + 's';
+                
+                let columnText = '';
+                for (let j = 0; j < 20; j++) {
+                    columnText += characters[Math.floor(Math.random() * characters.length)] + '<br>';
+                }
+                column.innerHTML = columnText;
+                
+                container.appendChild(column);
+            }
+        }
+
+        function beginJourney() {
+            alert('Welcome to Angel Cloud, New Born! Your transformation begins now.\n\nNext steps:\n1. Identity verification portal\n2. Avatar creation system\n3. Halo earning opportunities\n\nShane Brain will guide you through each step.');
+        }
+
+        // Initialize effects
+        createMatrixRain();
+
+        // Continuous matrix updates
+        setInterval(() => {
+            const columns = document.querySelectorAll('.matrix-column');
+            columns.forEach(column => {
+                if (Math.random() > 0.98) {
+                    const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+                    let newText = '';
+                    for (let j = 0; j < 20; j++) {
+                        newText += characters[Math.floor(Math.random() * characters.length)] + '<br>';
+                    }
+                    column.innerHTML = newText;
+                }
+            });
+        }, 100);
+    </script>
+</body>
+</html>
