@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  logibot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logibot-core
+    restart: unless-stopped
+    environment:
+      - GOOGLE_CREDENTIALS_PATH=/app/credentials.json
+      - ENVIRONMENT=production
+      - ENABLE_AUTO_SYNC=true
+      - SYNC_INTERVAL_MINUTES=5
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./credentials.json:/app/credentials.json:ro
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    networks:
+      - logibot-network
+    healthcheck:
+      test: ["CMD", "python3", "health_monitor.py"]
+      interval: 5m
+      timeout: 30s
+      retries: 3
+      start_period: 30s
+
+  webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logibot-webhook
+    restart: unless-stopped
+    command: python3 webhook_receiver.py
+    environment:
+      - GOOGLE_CREDENTIALS_PATH=/app/credentials.json
+      - ENVIRONMENT=production
+      - WEBHOOK_PORT=8080
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./credentials.json:/app/credentials.json:ro
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - logibot-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional: Ollama service (if not running on host)
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: logibot-ollama
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ollama-data:/root/.ollama
+  #   ports:
+  #     - "11434:11434"
+  #   networks:
+  #     - logibot-network
+
+networks:
+  logibot-network:
+    driver: bridge
+
+volumes:
+  ollama-data:
