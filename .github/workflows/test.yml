@@ -1,0 +1,123 @@
+name: LogiBot CI/CD
+
+on:
+  push:
+    branches: [ main, develop, 'claude/**' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        pytest test_sync.py -v --tb=short --cov=. --cov-report=term-missing
+
+    - name: Test haul rate calculation
+      run: |
+        python3 -c "
+        from google_sheets_sync import calculate_haul_rate
+        assert calculate_haul_rate(90) == 8.00, 'Haul rate calculation failed'
+        assert calculate_haul_rate(0) == 6.00, 'Minimum rate enforcement failed'
+        print('✓ Haul rate tests passed')
+        "
+
+    - name: Validate configuration
+      run: |
+        python3 -c "
+        from config import Config
+        c = Config()
+        assert c.HAUL_RATE_BASE == 130.0
+        assert c.HAUL_RATE_MINIMUM == 6.00
+        print('✓ Configuration validated')
+        "
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install linting tools
+      run: |
+        pip install flake8 black isort
+
+    - name: Run flake8
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Check code formatting with black
+      run: |
+        black --check --diff .
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: |
+        docker build -t logibot:test .
+
+    - name: Test Docker image
+      run: |
+        docker run --rm logibot:test python3 -c "
+        from config import Config
+        print('✓ Docker image working')
+        "
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Run safety check
+      run: |
+        pip install safety
+        safety check --file requirements.txt --json || true
+
+    - name: Run bandit security scan
+      run: |
+        pip install bandit
+        bandit -r . -f json -o bandit-report.json || true
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
