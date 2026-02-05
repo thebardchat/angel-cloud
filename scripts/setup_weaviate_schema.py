@@ -47,6 +47,18 @@ def setup_schema():
                 {"name": "severity", "dataType": ["string"]},
                 {"name": "timestamp", "dataType": ["date"]}
             ]
+        },
+        {
+            "class": "SessionMemory",
+            "description": "Consolidated session memories from Angel Cloud",
+            "vectorizer": "none",
+            "properties": [
+                {"name": "content", "dataType": ["text"]},
+                {"name": "session_date", "dataType": ["date"]},
+                {"name": "session_file", "dataType": ["string"]},
+                {"name": "section", "dataType": ["string"]},
+                {"name": "imported_at", "dataType": ["date"]}
+            ]
         }
     ]
 

@@ -12,7 +12,7 @@ def verify():
         print(f"  • {cls['class']}: {len(cls.get('properties', []))} properties")
 
     print("\n=== Record Counts ===")
-    for class_name in ['Conversation', 'LegacyKnowledge', 'CrisisLog']:
+    for class_name in ['Conversation', 'LegacyKnowledge', 'CrisisLog', 'SessionMemory']:
         try:
             result = client.query.aggregate(class_name).with_meta_count().do()
             count = result['data']['Aggregate'][class_name][0]['meta']['count']
