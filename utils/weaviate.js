@@ -215,7 +215,7 @@ async function addLegacyKnowledge(content, category = 'general', source = 'manua
  * Get class statistics
  */
 async function getStats() {
-  const classes = ['Conversation', 'LegacyKnowledge', 'CrisisLog'];
+  const classes = ['Conversation', 'LegacyKnowledge', 'CrisisLog', 'SessionMemory'];
   const stats = {};
 
   for (const className of classes) {
@@ -229,6 +229,143 @@ async function getStats() {
   }
 
   return stats;
+}
+
+/**
+ * Search SessionMemory for relevant past sessions
+ *
+ * @param {string} searchText - Text to search for
+ * @param {number} limit - Max results
+ */
+async function searchMemory(searchText, limit = 5) {
+  const searchClause = searchText
+    ? `bm25: { query: "${searchText.replace(/"/g, '\\"')}", properties: ["content"] }`
+    : '';
+
+  const query = `{
+    Get {
+      SessionMemory(
+        limit: ${limit}
+        ${searchClause}
+      ) {
+        content
+        section
+        session_file
+        session_date
+      }
+    }
+  }`;
+
+  const result = await weaviateQuery(query);
+  return result.data?.Get?.SessionMemory || [];
+}
+
+/**
+ * Unified brain search across all knowledge sources
+ *
+ * @param {string} searchText - Text to search for
+ * @param {Object} options - Search options
+ * @param {boolean} options.includeLegacy - Include LegacyKnowledge (default: true)
+ * @param {boolean} options.includeMemory - Include SessionMemory (default: true)
+ * @param {boolean} options.includeConversation - Include Conversation (default: false)
+ * @param {number} options.limit - Results per source (default: 3)
+ */
+async function brainSearch(searchText, options = {}) {
+  const {
+    includeLegacy = true,
+    includeMemory = true,
+    includeConversation = false,
+    limit = 3
+  } = options;
+
+  const results = {
+    legacy: [],
+    memory: [],
+    conversation: []
+  };
+
+  const searches = [];
+
+  if (includeLegacy) {
+    searches.push(
+      searchLegacy(searchText, null, limit)
+        .then(r => { results.legacy = r; })
+        .catch(() => {})
+    );
+  }
+
+  if (includeMemory) {
+    searches.push(
+      searchMemory(searchText, limit)
+        .then(r => { results.memory = r; })
+        .catch(() => {})
+    );
+  }
+
+  if (includeConversation) {
+    const query = `{
+      Get {
+        Conversation(
+          limit: ${limit}
+          bm25: { query: "${searchText.replace(/"/g, '\\"')}", properties: ["message"] }
+        ) {
+          message
+          role
+          mode
+          timestamp
+        }
+      }
+    }`;
+    searches.push(
+      weaviateQuery(query)
+        .then(r => { results.conversation = r.data?.Get?.Conversation || []; })
+        .catch(() => {})
+    );
+  }
+
+  await Promise.all(searches);
+  return results;
+}
+
+/**
+ * Get context for LLM prompt injection
+ *
+ * Returns a formatted string with relevant knowledge from all sources
+ * that can be injected into an LLM prompt.
+ *
+ * @param {string} query - User query to find relevant context for
+ * @param {number} maxTokens - Approximate max tokens (default: 1500)
+ */
+async function getContextForPrompt(query, maxTokens = 1500) {
+  const searchResults = await brainSearch(query, {
+    includeLegacy: true,
+    includeMemory: true,
+    includeConversation: false,
+    limit: 3
+  });
+
+  const contextParts = [];
+  let estimatedTokens = 0;
+
+  // Add legacy knowledge first (highest priority)
+  for (const item of searchResults.legacy) {
+    const chunk = `[Knowledge - ${item.category || 'general'}]\n${item.content}\n`;
+    const chunkTokens = Math.ceil(chunk.length / 4);
+    if (estimatedTokens + chunkTokens > maxTokens) break;
+    contextParts.push(chunk);
+    estimatedTokens += chunkTokens;
+  }
+
+  // Add session memory
+  for (const item of searchResults.memory) {
+    const chunk = `[Session - ${item.section || 'memory'}]\n${item.content}\n`;
+    const chunkTokens = Math.ceil(chunk.length / 4);
+    if (estimatedTokens + chunkTokens > maxTokens) break;
+    contextParts.push(chunk);
+    estimatedTokens += chunkTokens;
+  }
+
+  return contextParts.join('\n---\n');
 }
 
 /**
@@ -281,6 +418,9 @@ module.exports = {
   logConversation,
   logCrisis,
   searchLegacy,
+  searchMemory,
+  brainSearch,
+  getContextForPrompt,
   getRecentConversations,
   addLegacyKnowledge,
   getStats,
