@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angel Cloud - Shane Brain Welcome Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c1222 0%, #1a2332 50%, #0c1222 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        .angel-cloud-logo {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #00ccff, #0088ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #00ff88;
+            margin-bottom: 30px;
+        }
+
+        .welcome-center {
+            background: rgba(26, 35, 50, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .shane-brain-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .shane-brain-title {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .brain-icon {
+            width: 50px;
+            height: 50px;
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0% { filter: hue-rotate(0deg); }
+            25% { filter: hue-rotate(90deg); transform: translateX(1px); }
+            50% { filter: hue-rotate(180deg); }
+            75% { filter: hue-rotate(270deg); transform: translateX(-1px); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .avatar-container {
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            border: 3px solid #00ff88;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        #avatar-viewer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ff88;
+            font-size: 16px;
+            z-index: 100;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 3px solid rgba(0, 255, 136, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #00ff88;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .avatar-controls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00ff88;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .newborn-process {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .process-step {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .process-step:hover {
+            background: rgba(0, 255, 136, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .step-number {
+            font-size: 1.8rem;
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            color: #ccc;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin: 40px 0 20px 0;
+        }
+
+        .begin-journey-btn {
+            background: linear-gradient(45deg, #00ff88, #0088ff);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .begin-journey-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.6);
+            background: linear-gradient(45deg, #0088ff, #00ff88);
+        }
+
+        .halo-system {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 136, 255, 0.1);
+            border-left: 4px solid #0088ff;
+            border-radius: 10px;
+        }
+
+        .halo-title {
+            color: #0088ff;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .security-notice {
+            background: rgba(255, 136, 0, 0.1);
+            border: 1px solid #ff8800;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .security-title {
+            color: #ff8800;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .angel-cloud-logo {
+                font-size: 2rem;
+            }
+            .shane-brain-title {
+                font-size: 1.5rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .welcome-center {
+                padding: 20px;
+            }
+            .avatar-container {
+                width: 250px;
+                height: 250px;
+            }
+            .newborn-process {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .matrix-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100px;
+            font-size: 20px;
+            color: #00ff88;
+            opacity: 0.3;
+            animation: matrix-fall linear infinite;
+        }
+
+        @keyframes matrix-fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg">
+        <div class="matrix-rain" id="matrixRain"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="angel-cloud-logo">ANGEL CLOUD</h1>
+            <p class="subtitle">Elevating Humanity Through Collaboration</p>
+        </header>
+
+        <div class="welcome-center">
+            <div class="shane-brain-section">
+                <h2 class="shane-brain-title">
+                    SHANE BRAIN
+                    <div class="brain-icon">🧠</div>
+                    WELCOME CENTER
+                </h2>
+                
+                <div class="avatar-container">
+                    <div id="avatar-viewer">
+                        <div id="loading">
+                            <div class="spinner"></div>
+                            Loading Shane Brain Avatar...
+                        </div>
+                        <div class="avatar-controls">
+                            Click and drag to rotate • Scroll to zoom
+                        </div>
+                    </div>
+                </div>
+                
+                <p style="color: #ccc; font-size: 1rem; margin-top: 15px;">
+                    Your AI-Human Guide to Digital Transformation
+                </p>
+            </div>
+
+            <div class="security-notice">
+                <div class="security-title">🛡️ SECURE CHECKPOINT ACTIVE</div>
+                <p style="color: #ccc; font-size: 0.9rem;">
+                    All entries pass through blockchain-verified security protocols. Your safety is our priority.
+                </p>
+            </div>
+
+            <div class="newborn-process">
+                <div class="process-step">
+                    <div class="step-number">01</div>
+                    <div class="step-title">New Born Registration</div>
+                    <div class="step-description">
+                        Enter the incubation chamber where your digital identity is carefully crafted and verified.
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">02</div>
+                    <div class="step-title">Identity Verification</div>
+                    <div class="step-description">
+                        Multi-layer authentication ensures you are who you claim to be. Real humans building real trust.
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">03</div>
+                    <div class="step-title">Avatar Creation</div>
+                    <div class="step-description">
+                        Design your 3D presence that will represent you across all Angel Cloud worlds.
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">04</div>
+                    <div class="step-title">Halo Initiation</div>
+                    <div class="step-description">
+                        Begin earning trust through positive contributions. Your Halo score unlocks new possibilities.
+                    </div>
+                </div>
+            </div>
+
+            <div class="halo-system">
+                <div class="halo-title">The Halo Trust System</div>
+                <p style="color: #ccc; line-height: 1.6; font-size: 0.95rem;">
+                    Earn Halos by helping others, building constructively, and maintaining community safety. 
+                    Higher Halo counts unlock world-building privileges and leadership opportunities.
+                </p>
+            </div>
+
+            <div class="cta-section">
+                <button class="begin-journey-btn" onclick="beginJourney()">
+                    BEGIN YOUR TRANSFORMATION
+                </button>
+                <p style="color: #999; margin-top: 15px; font-size: 0.9rem;">
+                    Join millions working together to build a better digital society
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // Matrix rain effect
+        function createMatrixRain() {
+            const container = document.getElementById('matrixRain');
+            const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            
+            for (let i = 0; i < 50; i++) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = Math.random() * 100 + '%';
+                column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                column.style.animationDelay = Math.random() * 2 + 's';
+                
+                let columnText = '';
+                for (let j = 0; j < 20; j++) {
+                    columnText += characters[Math.floor(Math.random() * characters.length)] + '<br>';
+                }
+                column.innerHTML = columnText;
+                
+                container.appendChild(column);
+            }
+        }
+
+        // 3D Avatar Setup
+        let scene, camera, renderer, controls;
+
+        function init3DAvatar() {
+            const avatarViewer = document.getElementById('avatar-viewer');
+            
+            // Scene setup
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            
+            renderer.setSize(300, 300);
+            renderer.setClearColor(0x000000, 0);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            
+            avatarViewer.appendChild(renderer.domElement);
+            
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.enableZoom = true;
+            controls.enablePan = false;
+            controls.maxDistance = 5;
+            controls.minDistance = 1;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x00ff88, 0.4);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+            
+            const fillLight = new THREE.DirectionalLight(0x0088ff, 0.3);
+            fillLight.position.set(-5, 0, -5);
+            scene.add(fillLight);
+            
+            // Load GLB model
+            const loader = new THREE.GLTFLoader();
+            
+            // Change 'your-model.glb' to your actual GLB file name
+            loader.load(
+                './shanebrain-avatar.glb', // <-- Change this to your GLB file name
+                function (gltf) {
+                    const model = gltf.scene;
+                    
+                    // Center and scale the model
+                    const box = new THREE.Box3().setFromObject(model);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+                    
+                    // Scale model to fit in view
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const scale = 1.5 / maxDim;
+                    model.scale.setScalar(scale);
+                    
+                    // Center the model
+                    model.position.sub(center.multiplyScalar(scale));
+                    
+                    // Enable shadows
+                    model.traverse(function (child) {
+                        if (child.isMesh) {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                        }
+                    });
+                    
+                    scene.add(model);
+                    
+                    // Hide loading screen
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    // Position camera
+                    camera.position.set(0, 0, 2.5);
+                    controls.update();
+                },
+                function (progress) {
+                    console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+                },
+                function (error) {
+                    console.error('Error loading model:', error);
+                    document.getElementById('loading').innerHTML = '<div style="color: #ff6b6b;">Shane Brain Avatar Offline<br><small>Upload your GLB file to activate</small></div>';
+                }
+            );
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        function beginJourney() {
+            alert('Welcome to Angel Cloud, New Born!\n\nShane Brain is ready to guide you through:\n\n✓ Identity verification portal\n✓ Avatar creation system  \n✓ Halo earning opportunities\n✓ World building privileges\n\nYour transformation into a trusted Angel begins now.');
+        }
+
+        // Initialize everything
+        createMatrixRain();
+        init3DAvatar();
+
+        // Continuous matrix updates
+        setInterval(() => {
+            const columns = document.querySelectorAll('.matrix-column');
+            columns.forEach(column => {
+                if (Math.random() > 0.98) {
+                    const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+                    let newText = '';
+                    for (let j = 0; j < 20; j++) {
+                        newText += characters[Math.floor(Math.random() * characters.length)] + '<br>';
+                    }
+                    column.innerHTML = newText;
+                }
+            });
+        }, 100);
+
+        // Handle window resize for 3D avatar
+        window.addEventListener('resize', function() {
+            if (renderer && camera) {
+                renderer.setSize(300, 300);
+            }
+        });
+    </script>
+</body>
+</html>
