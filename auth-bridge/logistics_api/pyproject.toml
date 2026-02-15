@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shane-logistics-tool"
+version = "0.1.0"
+description = "Shane's proprietary haul rate and logistics quoting engine."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "Flask",
+    "pandas",
+    "numpy",
+    "Flask-Cors"
+]
+
+[project.urls]
+Homepage = "https://angelcloudai.com"
+"Bug Tracker" = "https://github.com/shanebrain/logistics"
+
+[project.scripts]
+# Defines a command line entry point (optional, but good practice)
+# quoter-cli = "logistics_api.quoter:main"
+
+[tool.setuptools.packages]
+find = {where = ["."]}

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shanebrain: Angel Cloud Mega Dashboard</title>
+    <style>
+        /* Base Styles for a Clean, High-Tech Look */
+        :root {
+            --angel-blue: #007bff; /* Primary color */
+            --angel-dark: #2c3e50; /* Background color */
+            --angel-light: #ecf0f1; /* Card background */
+            --angel-text: #ffffff; /* Text color */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--angel-dark);
+            color: var(--angel-text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Header (Shanebrain Title) */
+        .header {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px 30px;
+            text-align: center;
+            border-bottom: 2px solid var(--angel-blue);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            color: var(--angel-blue);
+            font-weight: 300;
+        }
+        .header p {
+            font-size: 0.9em;
+            color: #bdc3c7;
+        }
+
+        /* Main Content Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 25px;
+            flex-grow: 1;
+        }
+
+        /* Dashboard Card Component */
+        .card {
+            background-color: var(--angel-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: var(--angel-blue);
+        }
+
+        .card h2 {
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--angel-blue);
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        /* Quoting System Styling */
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .input-group label {
+            text-align: left;
+            font-size: 0.9em;
+            flex-grow: 1;
+        }
+        .input-group input[type="text"], .input-group select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #7f8c8d;
+            color: black;
+            width: 170px;
+            text-align: left;
+        }
+        .input-group input[type="number"] {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #7f8c8d;
+            color: black;
+            width: 170px;
+            text-align: left;
+        }
+        .calculate-btn {
+            background-color: var(--angel-blue);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        .calculate-btn:hover {
+            background-color: #0056b3;
+        }
+        /* Highlight for Optimal Plant */
+        .optimal-plant-highlight {
+            border: 2px solid #2ecc71 !important;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.5) !important;
+        }
+
+        .status-light {
+            float: right;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-top: 8px;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+        .status-light.online { background-color: #2ecc71; }
+        .status-light.pending { background-color: #f39c12; }
+        .status-light.error { background-color: #e74c3c; }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+
+    </style>
+</head>
+<body> 
+
+    <div class="header">
+        <h1>Shanebrain: Angel Cloud Command Center</h1>
+        <p>Unified Management for Legacy, Logistics, and Wellness</p>
+    </div>
+
+    <div class="dashboard-grid">
+        
+        <div class="card" id="legacy-ai-card">
+            <span class="status-light online"></span>
+            <h2>Angel Cloud / Shanebrain (AI Core)</h2>
+            <div id="angel-cloud-status">
+                <p><strong>Status:</strong> Legacy AI operational. Ready for deep context analysis.</p>
+                <p><strong>Next Action:</strong> Delegate a task using voice mode or text.</p>
+            </div>
+        </div>
+        
+        <div class="card" id="logistics-card">
+            <span class="status-light error"></span>
+            <h2>Logistics & Quoting System</h2>
+            <div id="haul-rate-module">
+                <p>Calculates most profitable plant, allowing for selection override.</p>
+                
+                <div class="input-group">
+                    <label for="deliveryDestinationSelect">Delivery Destination:</label>
+                    <select id="deliveryDestinationSelect" onchange="calculateFinalQuote()"></select>
+                </div>
+
+                <div class="input-group">
+                    <label for="materialSelect">Select Material/Plant:</label>
+                    <select id="materialSelect" onchange="calculateFinalQuote()"></select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="materialTons">Load Size (Tons):</label>
+                    <input type="number" id="materialTons" value="25" min="1" oninput="calculateFinalQuote()">
+                </div>
+                
+                <div class="input-group">
+                    <label for="calculatedMinutes">Calculated RTT:</label>
+                    <input type="text" id="calculatedMinutes" value="0 min" readonly>
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateFinalQuote()">Find Optimal Quote</button>
+                
+                <h3 style="margin-top: 20px; color: #61dafb;">MIN. PROFITABLE HAUL RATE:</h3>
+                <p id="haulRateResult" style="font-size: 1.2em; color: #2ecc71; font-weight: bold; margin-bottom: 5px;">$0.00 / ton</p>
+                
+                <h3 style="color: #61dafb;">TOTAL DELIVERY PRICE:</h3>
+                <p id="totalPriceResult" style="font-size: 2em; color: #e74c3c; font-weight: bold;">$0.00</p>
+                <p id="quoteBreakdown" style="font-size: 0.8em; color: #bdc3c7; margin-top: 5px;">(Breakdown)</p>
+            </div>
+        </div>
+
+        <div class="card" id="family-card">
+            <span class="status-light online"></span>
+            <h2>Family First Automation Engine</h2>
+            <div id="calendar-module">
+                <p><strong>Automation Status:</strong> Automated text/email system ready.</p>
+                <p>Next: Sync to-do lists and schedules.</p>
+            </div>
+        </div>
+
+        <div class="card" id="security-card">
+            <span class="status-light error"></span>
+            <h2>Pulsar AI Blockchain Security</h2>
+            <div id="pulsar-module">
+                <p>Defender Agents monitoring network traffic and file integrity.</p>
+                <button onclick="alert('Connect MetaMask Wallet');">Verify Wallet SSO</button>
+            </div>
+        </div>
+
+    </div>
+    
+    <script>
+        // --- CORE DATA STRUCTURES (Placeholder until fetched) ---
+        let AllProducts = []; // Will store the full list of products/quarries
+        
+        // Target delivery sites (These are hardcoded destinations based on the API's Distance Matrix)
+        const DeliveryLocations = [
+            { id: "D_HSV_AVIA", name: "Huntsville Aviation Dr (HSV Target)" },
+            { id: "D_DECA_SITEA", name: "Decatur Industrial Site A (DECA Center)" },
+            { id: "D_FLOR_B", name: "Florence Jobsite B (FLOR Target)" }
+        ];
+
+        // --- FETCHING AND POPULATING UI ---
+
+        async function fetchProductsAndInitialize() {
+            const apiUrl = 'http://127.0.0.1:5001/api/products';
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`API Not Running or HTTP Error: ${response.status}`);
+                }
+                AllProducts = await response.json();
+                populateMaterialDropdown();
+                calculateFinalQuote();
+                
+            } catch (error) {
+                console.error("API Connection Error. Please run python quoter.py in your terminal.", error);
+                document.getElementById('quoteBreakdown').textContent = `API ERROR: Please ensure python quoter.py is running.`;
+                document.getElementById('logistics-card').querySelector('.status-light').className = 'status-light error';
+            }
+        }
+        
+        // Function to populate the delivery dropdown
+        function populateLocationDropdown() {
+            const deliverySelect = document.getElementById('deliveryDestinationSelect');
+            deliverySelect.innerHTML = '';
+            DeliveryLocations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location.id;
+                option.textContent = location.name;
+                deliverySelect.appendChild(option);
+            });
+        }
+        
+        // Function to populate the material dropdown list using fetched data
+        function populateMaterialDropdown() {
+            const materialSelect = document.getElementById('materialSelect');
+            materialSelect.innerHTML = ''; 
+            
+            const autoOption = document.createElement('option');
+            autoOption.textContent = "Auto-Selected Optimal Plant";
+            autoOption.value = "AUTO";
+            materialSelect.appendChild(autoOption);
+            
+            AllProducts.forEach(material => {
+                const option = document.createElement('option');
+                option.value = material.id;
+                option.textContent = material.name;
+                materialSelect.appendChild(option);
+            });
+            materialSelect.selectedIndex = 0;
+        }
+
+        // --- MASTER QUOTING FUNCTION (Client-side) ---
+
+        async function calculateFinalQuote() {
+            const materialSelect = document.getElementById('materialSelect');
+            const deliverySelect = document.getElementById('deliveryDestinationSelect');
+            const totalTons = parseFloat(document.getElementById('materialTons').value) || 0;
+            
+            const destinationId = deliverySelect.value;
+            const selectedMaterialId = materialSelect.value;
+            const logisticsCard = document.getElementById('logistics-card');
+
+            logisticsCard.classList.remove('optimal-plant-highlight');
+
+            // Input Validation
+            if (totalTons <= 0 || !destinationId) {
+                document.getElementById('calculatedMinutes').value = "Error";
+                document.getElementById('totalPriceResult').textContent = "$0.00";
+                document.getElementById('quoteBreakdown').textContent = "(Enter tons and select destination)";
+                logisticsCard.querySelector('.status-light').className = 'status-light error';
+                return;
+            }
+
+            // Construct API URL
+            const apiUrl = new URL('http://127.0.0.1:5001/api/quote');
+            apiUrl.searchParams.append('destination', destinationId);
+            apiUrl.searchParams.append('tons', totalTons);
+            apiUrl.searchParams.append('material_id', selectedMaterialId);
+
+            try {
+                const response = await fetch(apiUrl);
+                const quoteData = await response.json();
+
+                if (response.ok) {
+                    // Success: Update UI with final quote data
+                    const finalMaterial = AllProducts.find(p => p.id === quoteData.product_id);
+                    const destinationName = DeliveryLocations.find(d => d.id === destinationId).name;
+
+                    document.getElementById('calculatedMinutes').value = quoteData.rtt_minutes + " min";
+                    document.getElementById('haulRateResult').textContent = `$${quoteData.haul_rate_per_ton.toFixed(2)} / ton`;
+                    document.getElementById('totalPriceResult').textContent = `$${quoteData.total_job_price.toFixed(2)}`;
+                    document.getElementById('quoteBreakdown').textContent = `${quoteData.plant} selected for ${destinationName}. ${quoteData.breakdown}`;
+
+                    // Auto-select the optimal choice in the dropdown for confirmation
+                    if (selectedMaterialId === "AUTO") {
+                         materialSelect.value = quoteData.product_id;
+                    }
+
+                    logisticsCard.classList.add('optimal-plant-highlight');
+                    logisticsCard.querySelector('.status-light').className = 'status-light online';
+
+                } else {
+                    // API returned error (e.g., No quote found)
+                    document.getElementById('quoteBreakdown').textContent = `Quote Error: ${quoteData.error || 'No quote found for this plant.'}`;
+                    logisticsCard.querySelector('.status-light').className = 'status-light error';
+                }
+
+            } catch (error) {
+                console.error("Fetch failed (API down?):", error);
+                document.getElementById('quoteBreakdown').textContent = "Connection Failed. Is python quoter.py running?";
+                logisticsCard.querySelector('.status-light').className = 'status-light error';
+            }
+        }
+        
+        // Initial setup function
+        document.addEventListener('DOMContentLoaded', () => {
+            populateLocationDropdown();
+            fetchProductsAndInitialize(); 
+        });
+    </script>
+</body>
+</html>
