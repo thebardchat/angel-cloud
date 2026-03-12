@@ -12,3 +12,6 @@ google-api-python-client>=2.100.0
 # Utilities
 python-dotenv>=1.0.0
 requests>=2.31.0
+
+# Weaviate Vector Database
+weaviate-client>=3.0.0
