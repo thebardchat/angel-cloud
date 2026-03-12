@@ -43,6 +43,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/messaging', require('./routes/messaging'));
 app.use('/api/angels', require('./routes/angels'));
 app.use('/api/ai', require('./routes/ai'));
+app.use('/api/weaviate', require('./routes/weaviate'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -63,10 +64,11 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/health',
       auth: '/api/auth',
-      users: '/api/users', 
+      users: '/api/users',
       messaging: '/api/messaging',
       angels: '/api/angels',
-      ai: '/api/ai'
+      ai: '/api/ai',
+      weaviate: '/api/weaviate'
     }
   });
 });
@@ -114,6 +116,7 @@ app.listen(PORT, () => {
   - Angels: http://localhost:${PORT}/api/angels
   - Messaging: http://localhost:${PORT}/api/messaging
   - AI: http://localhost:${PORT}/api/ai
+  - Weaviate: http://localhost:${PORT}/api/weaviate
   
   Ready to help angels support people in crisis! 😇
   `);
