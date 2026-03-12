@@ -2,6 +2,21 @@
 
 Mental wellness communication platform named after Angel Brazelton. Part of the [ShaneBrain ecosystem](https://github.com/thebardchat/shanebrain-core).
 
+> All thebardchat repositories follow the [ShaneBrain Constitution](https://github.com/thebardchat/constitution) — the single source of truth.
+
+## Infrastructure
+
+All thebardchat repos run on the same hardware:
+
+| Component | Spec |
+|-----------|------|
+| Board | Raspberry Pi 5, 16GB RAM |
+| Case | Pironman 5-MAX (SunFounder) |
+| Storage | NVMe RAID 1 — 2x WD Blue SN5000 2TB (mdadm) |
+| RAID Path | `/mnt/shanebrain-raid/` |
+| Core Path | `/mnt/shanebrain-raid/shanebrain-core/` |
+| Architecture | ARM64 (aarch64) |
+
 ## Structure
 
 ```
@@ -33,3 +48,12 @@ New Born -> Young Angel -> Growing Angel -> Helping Angel -> Guardian Angel -> A
 
 - [shanebrain-core](https://github.com/thebardchat/shanebrain-core) - Main AI brain
 - [pulsar_sentinel](https://github.com/thebardchat/pulsar_sentinel) - Security layer
+- [constitution](https://github.com/thebardchat/constitution) - Governance and nine pillars
+
+## Credits
+
+- **[Claude](https://claude.ai)** (Anthropic) — AI co-builder
+- **[Raspberry Pi Foundation](https://www.raspberrypi.org)** — affordable local compute
+- **[Pironman 5-MAX](https://www.sunfounder.com/products/pironman-5-max)** (SunFounder) — NVMe RAID chassis
+- **[WD Blue SN5000](https://www.westerndigital.com)** (Western Digital) — 2x 2TB NVMe in RAID 1
+- **[mdadm](https://raid.wiki.kernel.org)** — Linux software RAID
