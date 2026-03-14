@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angel Cloud - Welcome Center</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Matrix Background -->
+    <canvas id="matrix-bg" class="matrix-bg"></canvas>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="angel-cloud-logo">ANGEL CLOUD</div>
+            <div class="subtitle">Intelligence Platform & Welcome Center</div>
+            <div class="system-status">
+                <span class="status-indicator" id="status-indicator"></span>
+                <span id="status-text">System Online</span>
+            </div>
+        </header>
+
+        <!-- Welcome Center Main -->
+        <section class="welcome-center">
+            <!-- Shane's Digital Avatar -->
+            <div class="shane-brain-section">
+                <div class="shane-brain-title">
+                    <div class="brain-icon">🧠</div>
+                    <span>Shanebrain AI System</span>
+                    <div class="brain-icon">⚡</div>
+                </div>
+                <p class="shane-description">
+                    Local AI Infrastructure • $0/month Cloud Costs • 8TB Training Drive
+                </p>
+            </div>
+
+            <!-- 3D Avatar Preview -->
+            <div class="avatar-container">
+                <div class="avatar-frame">
+                    <img src="../3D Face/shane-angel-cloud-avatar.png" alt="Shane's Digital Avatar" class="avatar-image">
+                    <div class="avatar-overlay"></div>
+                    <div class="scan-line"></div>
+                </div>
+                <div class="avatar-stats">
+                    <div class="stat">
+                        <span class="stat-label">Active Drivers:</span>
+                        <span class="stat-value" id="driver-count">19</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Models Trained:</span>
+                        <span class="stat-value" id="model-count">--</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Uptime:</span>
+                        <span class="stat-value" id="uptime">99.9%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Overview -->
+            <div class="system-overview">
+                <h2>🚀 LogiBot System Components</h2>
+                <div class="components-grid">
+                    <div class="component-card">
+                        <div class="component-icon">📊</div>
+                        <h3>Data Sync</h3>
+                        <p>Real-time Google Sheets → Firestore sync for 19 active drivers</p>
+                        <div class="component-status online">Active</div>
+                    </div>
+
+                    <div class="component-card">
+                        <div class="component-icon">🤖</div>
+                        <h3>Legacy AI</h3>
+                        <p>Custom Llama model trained on operational data</p>
+                        <div class="component-status online">Ready</div>
+                    </div>
+
+                    <div class="component-card">
+                        <div class="component-icon">💾</div>
+                        <h3>8TB Drive</h3>
+                        <p>Local training datasets, models, and memory</p>
+                        <div class="component-status online">Mounted</div>
+                    </div>
+
+                    <div class="component-card">
+                        <div class="component-icon">🔄</div>
+                        <h3>Multi-Computer Sync</h3>
+                        <p>Seamless work ↔ home synchronization</p>
+                        <div class="component-status online">Configured</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contributor Section -->
+            <div class="contributor-section">
+                <h2>🤝 Become a Contributor</h2>
+                <p class="contributor-intro">
+                    Help build the Angel Cloud welcome experience. Qualified contributors can submit 3D models, UI enhancements, and features.
+                </p>
+
+                <div class="criteria-box">
+                    <h3>Contributor Criteria</h3>
+                    <ul class="criteria-list">
+                        <li>✅ Minimum 10 GitHub stars across repos</li>
+                        <li>✅ At least 3 public repositories</li>
+                        <li>✅ Verified email address</li>
+                        <li>✅ Admin approval required</li>
+                    </ul>
+                </div>
+
+                <div class="contributor-actions">
+                    <button class="btn-primary" onclick="showContributorForm()">Apply as Contributor</button>
+                    <button class="btn-secondary" onclick="showLoginForm()">Contributor Login</button>
+                </div>
+            </div>
+
+            <!-- Live System Metrics -->
+            <div class="metrics-section">
+                <h2>📈 Live System Metrics</h2>
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <div class="metric-value" id="total-syncs">--</div>
+                        <div class="metric-label">Total Syncs</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="ai-queries">--</div>
+                        <div class="metric-label">AI Queries</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="cost-savings">$1,000</div>
+                        <div class="metric-label">Monthly Savings</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="contributors">0</div>
+                        <div class="metric-label">Contributors</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="quick-links">
+                <h2>🔗 Quick Links</h2>
+                <div class="links-grid">
+                    <a href="/health" class="link-card">
+                        <span class="link-icon">🏥</span>
+                        <span class="link-text">Health Monitor</span>
+                    </a>
+                    <a href="https://github.com/thebardchat/angel-cloud" class="link-card" target="_blank">
+                        <span class="link-icon">📚</span>
+                        <span class="link-text">GitHub Repository</span>
+                    </a>
+                    <a href="/api/contributor/criteria" class="link-card">
+                        <span class="link-icon">📋</span>
+                        <span class="link-text">Contributor Criteria</span>
+                    </a>
+                    <a href="/docs" class="link-card">
+                        <span class="link-icon">📖</span>
+                        <span class="link-text">Documentation</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 Shane Brazelton | Angel Cloud Intelligence Platform</p>
+            <p>Mission: Replace $1,000/mo cloud costs with local AI infrastructure</p>
+        </footer>
+    </div>
+
+    <!-- Contributor Modal -->
+    <div id="contributor-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2>Apply as Contributor</h2>
+            <form id="contributor-form" onsubmit="submitContributorForm(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>GitHub URL</label>
+                    <input type="url" id="github_url" placeholder="https://github.com/yourusername" required>
+                </div>
+                <div class="form-group">
+                    <label>Total GitHub Stars (across all repos)</label>
+                    <input type="number" id="github_stars" min="10" required>
+                </div>
+                <div class="form-group">
+                    <label>Number of Public Repos</label>
+                    <input type="number" id="public_repos" min="3" required>
+                </div>
+                <button type="submit" class="btn-primary">Submit Application</button>
+            </form>
+            <div id="form-result"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="welcome.js"></script>
+</body>
+</html>

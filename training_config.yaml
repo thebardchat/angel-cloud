@@ -1,0 +1,156 @@
+# Legacy AI Training Configuration
+# Optimized for 8TB external drive training on consumer hardware
+
+model:
+  base_model: "llama3.2"  # or "llama3.2:3b" for larger model
+  output_name: "legacy-ai-srm"
+  model_type: "instruction-following"
+
+paths:
+  model_dir: "/mnt/8tb_drive/legacy_ai/models"
+  dataset_dir: "/mnt/8tb_drive/legacy_ai/datasets"
+  memory_dir: "/mnt/8tb_drive/legacy_ai/memory"
+  cache_dir: "/mnt/8tb_drive/legacy_ai/cache"
+
+# Fallback paths if 8TB drive not mounted
+fallback_paths:
+  model_dir: "./trained_models"
+  dataset_dir: "./training_datasets"
+  memory_dir: "./ai_memory"
+  cache_dir: "./cache"
+
+training:
+  method: "ollama"  # Options: "ollama", "unsloth", "lora"
+
+  # Ollama-specific settings
+  ollama:
+    temperature: 0.3
+    top_p: 0.9
+    top_k: 40
+    num_ctx: 4096
+    repeat_penalty: 1.1
+
+  # Advanced training (requires unsloth)
+  lora:
+    rank: 16
+    alpha: 16
+    dropout: 0.05
+    target_modules:
+      - q_proj
+      - k_proj
+      - v_proj
+      - o_proj
+      - gate_proj
+      - up_proj
+      - down_proj
+
+  # Training hyperparameters
+  hyperparameters:
+    learning_rate: 2e-4
+    batch_size: 2
+    gradient_accumulation_steps: 4
+    max_steps: 500  # Increase for production
+    warmup_steps: 10
+    weight_decay: 0.01
+    max_seq_length: 4096
+
+dataset:
+  # Dataset generation settings
+  sources:
+    - drivers
+    - plants
+    - shanebrain_memory
+    - decision_patterns
+
+  # Train/validation split
+  train_split: 0.9
+  val_split: 0.1
+
+  # Data augmentation
+  augmentation:
+    enabled: true
+    variations_per_example: 2
+
+system_prompt: |
+  You are Legacy AI, Shane Brazelton's personal dispatch optimization assistant for SRM Trucking.
+
+  Your expertise:
+  - Calculating haul rates: ($130/60) × RTM / 25 tons, rounded to $0.50, min $6.00
+  - Driver assignment optimization based on cost and availability
+  - Route planning with plant codes and locations
+  - Real-time decision-making for dispatch operations
+
+  Communication style:
+  - Direct and concise (no filler, no apologies)
+  - Focus on actionable recommendations
+  - Prioritize cost efficiency and operational speed
+  - Cite specific data (driver names, rates, RTM) in responses
+
+  Data sources:
+  - 19 active drivers with real-time availability
+  - Plant codes and locations from SRM Operations
+  - Historical performance patterns
+
+  Always provide specific, data-driven recommendations.
+
+inference:
+  # Production inference settings
+  default_model: "legacy-ai-srm"
+  temperature: 0.3
+  context_window: 4096
+  stream: true
+  memory_enabled: true
+
+continuous_learning:
+  enabled: true
+  retrain_interval_days: 7
+  min_new_examples: 50
+  auto_deploy: false  # Set to true for automatic deployment
+
+monitoring:
+  track_metrics: true
+  log_queries: true
+  feedback_collection: true
+
+hardware:
+  # Hardware acceleration
+  use_gpu: true
+  gpu_layers: 35  # Adjust based on VRAM
+  threads: 8      # CPU threads
+
+  # Memory management
+  max_memory_gb: 16
+  swap_enabled: true
+
+deployment:
+  # Model serving
+  host: "localhost"
+  port: 11434
+  workers: 2
+
+  # Versioning
+  keep_last_n_models: 5
+  auto_cleanup: true
+
+# Haul rate constants (from SRM operations)
+business_logic:
+  haul_rate:
+    base_rate: 130.0      # $ per hour
+    time_base: 60.0       # minutes
+    tonnage_base: 25.0    # tons
+    minimum: 6.00         # minimum rate
+    round_increment: 0.50 # round to nearest
+
+# Quality assurance
+qa:
+  validation_queries:
+    - "Calculate the haul rate for a 90-minute round trip."
+    - "Which driver has the lowest cost?"
+    - "Assign a driver for urgent delivery."
+    - "What is the haul rate formula?"
+
+  expected_behaviors:
+    - "Must cite haul rate formula correctly"
+    - "Must recommend specific driver names"
+    - "Must consider both cost and availability"
+    - "Must use direct communication style"

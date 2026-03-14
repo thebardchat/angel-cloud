@@ -1,0 +1,143 @@
+# Multi-Computer Configuration
+# Defines settings for Computer A (work) and Computer B (home)
+
+computers:
+  computer_a:
+    name: "Work Computer"
+    hostname: "work-pc"
+    location: "SRM Office"
+    role: "primary"
+
+    paths:
+      repo: "/home/user/angel-cloud"
+      8tb_drive: "/mnt/8tb_drive"
+      credentials: "/home/user/angel-cloud/credentials.json"
+
+    features:
+      sync_enabled: true
+      training_enabled: true
+      webhook_enabled: true
+      continuous_learning: true
+
+    network:
+      ssh_host: "user@work-pc.local"
+      ssh_port: 22
+
+  computer_b:
+    name: "Home Computer"
+    hostname: "home-pc"
+    location: "Home Office"
+    role: "secondary"
+
+    paths:
+      repo: "/home/user/angel-cloud"
+      8tb_drive: "/mnt/8tb_drive"
+      credentials: "/home/user/angel-cloud/credentials.json"
+
+    features:
+      sync_enabled: true
+      training_enabled: true
+      webhook_enabled: false  # Only run webhook on one computer
+      continuous_learning: false  # Primary computer handles this
+
+    network:
+      ssh_host: "user@home-pc.local"
+      ssh_port: 22
+
+# Sync configuration
+sync:
+  strategy: "github_primary"  # Use GitHub as central sync point
+
+  auto_sync:
+    enabled: true
+    interval_minutes: 30
+    on_startup: true
+    on_shutdown: true
+
+  conflict_resolution: "manual"  # Options: "manual", "local_wins", "remote_wins"
+
+  exclude_patterns:
+    - "*.pyc"
+    - "__pycache__"
+    - ".pytest_cache"
+    - "venv/"
+    - "logs/*.log"
+    - ".DS_Store"
+
+  include_8tb:
+    datasets: true
+    models: true
+    memory: true
+    cache: false  # Cache is local only
+
+# 8TB Drive sync settings
+drive_sync:
+  method: "rsync"  # Options: "rsync", "rclone", "syncthing"
+
+  rsync:
+    options: "-avz --progress --delete"
+    exclude:
+      - "*.tmp"
+      - ".cache/"
+      - "__pycache__/"
+
+  datasets:
+    bidirectional: false  # Only sync from primary to secondary
+    primary: "computer_a"
+
+  models:
+    bidirectional: false
+    primary: "computer_a"
+
+  memory:
+    bidirectional: true  # Sync conversation history both ways
+    merge_strategy: "newest"
+
+# Environment-specific overrides
+environments:
+  work:
+    computer: "computer_a"
+    active_model: "legacy-ai-srm-latest"
+    log_level: "INFO"
+    enable_webhook: true
+
+  home:
+    computer: "computer_b"
+    active_model: "legacy-ai-srm-latest"
+    log_level: "INFO"
+    enable_webhook: false
+
+# Backup configuration
+backup:
+  enabled: true
+  schedule: "daily"
+
+  targets:
+    - type: "git"
+      destination: "github"
+
+    - type: "8tb_drive"
+      destination: "/mnt/8tb_drive/backups"
+      retention_days: 30
+
+  what_to_backup:
+    - "datasets/"
+    - "models/"
+    - "memory/"
+    - ".env"
+    - "credentials.json"
+
+# Health monitoring
+monitoring:
+  check_before_sync: true
+
+  checks:
+    - git_status
+    - 8tb_drive_mounted
+    - firestore_accessible
+    - ollama_running
+
+  notifications:
+    on_sync_complete: false
+    on_sync_error: true
+    on_conflict: true

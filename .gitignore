@@ -138,7 +138,33 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 credentials.json
+credentials.json
+
+# Python
 __pycache__/
-*.pyc
-sessions/
-auth-bridge/node_modules/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db 
