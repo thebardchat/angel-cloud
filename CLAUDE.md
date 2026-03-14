@@ -141,3 +141,8 @@ Shane Brazelton — dump truck dispatcher in Meridianville, Alabama building AI 
 **Ko-fi:** ko-fi.com/shanebrain
 **Discord:** discord.gg/xbHQZkggU7
 **Mission:** 800 million users. Digital legacy for generations.
+
+## Claude Code Rules
+- Commit and push directly to `main`. Do NOT create branches.
+- Run build/test commands before committing.
+- Update CLAUDE.md session log before final commit.
