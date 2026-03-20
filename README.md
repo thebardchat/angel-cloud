@@ -410,3 +410,16 @@ For issues and questions:
 **Maintainer:** Shane Brazelton
 
 **Mission:** Build fixed-cost local AI infrastructure to replace $1,000/mo variable cloud costs.
+
+
+---
+
+## Support This Work
+
+If what I'm building matters to you — local AI for real people, tools for the left-behind — here's how to help:
+
+- **[Sponsor me on GitHub](https://github.com/sponsors/thebardchat)**
+- **[Buy the book](https://www.amazon.com/Probably-Think-This-Book-About/dp/B0GT25R5FD)** — *You Probably Think This Book Is About You*
+- **Star the repos** — visibility matters for projects like this
+
+Built by **Shane Brazelton** · Co-built with **Claude** (Anthropic) · Hazel Green, Alabama
