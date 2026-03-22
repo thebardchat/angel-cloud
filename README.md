@@ -1,10 +1,13 @@
-# Angel Cloud / LogiBot
+<div align="center"><img src=".github/assets/banner.png" alt="Angel Cloud" width="100%"></div>
 
-**Shane's AI Memory System & Automation Hub - Angel Cloud Intelligence Platform**
-
+[![Constitution](https://img.shields.io/badge/Constitution-ShaneTheBrain-blue)](https://github.com/thebardchat/constitution)
 [![CI/CD](https://github.com/thebardchat/angel-cloud/workflows/LogiBot%20CI%2FCD/badge.svg)](https://github.com/thebardchat/angel-cloud/actions)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: Proprietary](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+
+# Angel Cloud / LogiBot
+
+**Shane's AI Memory System & Automation Hub - Angel Cloud Intelligence Platform**
 
 ## Overview
 
@@ -412,6 +415,28 @@ For issues and questions:
 **Mission:** Build fixed-cost local AI infrastructure to replace $1,000/mo variable cloud costs.
 
 
+## Built With
+
+<table>
+  <tr>
+    <td align="center" width="200">
+      <b>Claude by Anthropic</b><br/>
+      <sub>AI partner and co-builder.</sub><br/><br/>
+      <a href="https://claude.ai"><code>claude.ai</code></a>
+    </td>
+    <td align="center" width="200">
+      <b>Raspberry Pi 5</b><br/>
+      <sub>Local AI compute node.</sub><br/><br/>
+      <a href="https://www.raspberrypi.com"><code>raspberrypi.com</code></a>
+    </td>
+    <td align="center" width="200">
+      <b>Pironman 5-MAX</b><br/>
+      <sub>NVMe RAID 1 chassis by Sunfounder.</sub><br/><br/>
+      <a href="https://www.sunfounder.com"><code>sunfounder.com</code></a>
+    </td>
+  </tr>
+</table>
+
 ---
 
 ## Support This Work
@@ -423,3 +448,11 @@ If what I'm building matters to you — local AI for real people, tools for the 
 - **Star the repos** — visibility matters for projects like this
 
 Built by **Shane Brazelton** · Co-built with **Claude** (Anthropic) · Hazel Green, Alabama
+
+---
+
+<div align="center">
+
+*Part of the [ShaneBrain Ecosystem](https://github.com/thebardchat) · Built under the [Constitution](https://github.com/thebardchat/constitution)*
+
+</div>
