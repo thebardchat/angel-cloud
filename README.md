@@ -1,5 +1,9 @@
 <div align="center"><img src=".github/assets/banner.png" alt="Angel Cloud" width="100%"></div>
 
+> **Try Claude free for 2 weeks** — the AI powering this ecosystem. [Start your free trial →](https://claude.ai/referral/4fAMYN9Ing)
+
+![social card](assets/social-card.jpg)
+
 [![Constitution](https://img.shields.io/badge/Constitution-ShaneTheBrain-blue)](https://github.com/thebardchat/constitution)
 [![CI/CD](https://github.com/thebardchat/angel-cloud/workflows/LogiBot%20CI%2FCD/badge.svg)](https://github.com/thebardchat/angel-cloud/actions)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
