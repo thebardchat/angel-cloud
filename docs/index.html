@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="Angel Cloud — Mental Wellness Platform">
+<meta property="og:description" content="A gentle AI wellness platform. Local-first, privacy-respecting, built on Raspberry Pi 5.">
+<meta property="og:image" content="https://thebardchat.github.io/angel-cloud/docs/social-card.svg">
+<title>Angel Cloud — Wellness Platform</title>
+<style>
+  :root {
+    --bg: #040d18;
+    --bg2: #071628;
+    --teal: #2dd4bf;
+    --blue: #38bdf8;
+    --blue2: #0ea5e9;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --card: #071628;
+    --border: #0f3460;
+    --accent: #818cf8;
+    --soft: #e0f2fe;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  canvas#particles {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; opacity: 0.3;
+  }
+  .content { position: relative; z-index: 1; }
+
+  .ref-banner {
+    background: linear-gradient(90deg, #071628, #0c2340, #071628);
+    border-bottom: 1px solid var(--border);
+    padding: 0.7rem 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  .ref-banner a { color: var(--teal); text-decoration: none; font-weight: 600; }
+  .ref-banner a:hover { text-decoration: underline; }
+
+  header {
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 0%, rgba(14,165,233,0.12) 0%, transparent 65%);
+  }
+  .angel-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(90deg, #0c4a6e, #164e63);
+    color: var(--teal);
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 0.25rem 0.75rem; border-radius: 999px; margin-bottom: 1rem;
+  }
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 20%, var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+  .tagline { color: var(--muted); font-size: 1.15rem; max-width: 560px; margin: 0 auto 2rem; }
+  .cta-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .btn {
+    display: inline-block; padding: 0.75rem 1.8rem; border-radius: 9px;
+    font-weight: 600; font-size: 0.9rem; text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,212,191,0.2); }
+  .btn-primary { background: linear-gradient(135deg, #0369a1, #0c4a6e); color: #fff; border: 1px solid #0284c7; }
+  .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--teal); }
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.2);
+    border-radius: 999px; padding: 0.3rem 0.9rem; font-size: 0.8rem; color: var(--teal);
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal);
+    box-shadow: 0 0 6px var(--teal); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  main { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 6rem; }
+  h2 {
+    font-size: 1.4rem; color: var(--teal); margin: 3rem 0 1.2rem;
+    border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .feature-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.4rem; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .feature-card:hover { border-color: var(--teal); box-shadow: 0 0 20px rgba(45,212,191,0.1); }
+  .feature-icon { font-size: 1.6rem; margin-bottom: 0.7rem; }
+  .feature-card h3 { font-size: 0.95rem; color: var(--blue); margin-bottom: 0.4rem; }
+  .feature-card p { font-size: 0.82rem; color: var(--muted); }
+
+  .stack-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem;
+  }
+  .stack-pill {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.6rem;
+  }
+  .stack-pill span:first-child { font-size: 1.1rem; }
+  .stack-pill span:last-child { font-size: 0.82rem; color: var(--muted); }
+
+  .commands-block {
+    background: #030c16; border: 1px solid var(--border); border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    font-family: 'Courier New', monospace; font-size: 0.85rem;
+  }
+  .cmd { color: var(--teal); margin: 0.3rem 0; }
+  .cmd span { color: var(--muted); }
+
+  footer {
+    text-align: center; color: var(--muted); font-size: 0.8rem;
+    padding: 2rem 1rem 5rem;
+  }
+  footer a { color: var(--teal); text-decoration: none; }
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<div class="content">
+
+<div class="ref-banner">
+  <strong>Try Claude free for 2 weeks</strong> — the AI behind this entire ecosystem.&nbsp;
+  <a href="https://claude.ai/referral/4fAMYN9Ing" target="_blank" rel="noopener">Start your free trial &rarr;</a>
+</div>
+
+<header>
+  <span class="angel-icon">&#9728;</span>
+  <div class="badge">Live &middot; Port 4200 &middot; Tailscale Funnel</div>
+  <h1>Angel Cloud</h1>
+  <p class="tagline">A gentle mental wellness platform. AI-powered, privacy-first, running local on Raspberry Pi 5.</p>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="https://github.com/thebardchat/angel-cloud">View on GitHub</a>
+    <a class="btn btn-secondary" href="https://shanebrain-1.tail202c1a.ts.net">Live Platform &rarr;</a>
+  </div>
+  <div class="live-badge"><span class="dot"></span> Live at shanebrain-1.tail202c1a.ts.net</div>
+</header>
+
+<main>
+  <h2>Features</h2>
+  <div class="features-grid">
+
+    <div class="feature-card">
+      <div class="feature-icon">&#128274;</div>
+      <h3>User Auth</h3>
+      <p>Secure registration and login, SQLite-backed sessions. Your data stays on-device.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">&#129302;</div>
+      <h3>AI Chat</h3>
+      <p>Conversational AI powered by local Ollama models via 4-node cluster proxy. No OpenAI. No data leaving your network.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">&#129504;</div>
+      <h3>Weaviate RAG</h3>
+      <p>Semantic search across 210+ knowledge objects. Responses grounded in your personal knowledge base.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">&#128218;</div>
+      <h3>Messenger Storyteller</h3>
+      <p>A narrative wellness engine built into the messenger. Stories unfold through conversation over time.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">&#128274;</div>
+      <h3>Privacy Commands</h3>
+      <p><code>OPTOUT</code>, <code>ANON</code>, <code>FORGET</code> — users control their data at any time with plain-text commands.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">&#127942;</div>
+      <h3>Leaderboard</h3>
+      <p>Community wellness leaderboard. Friendly accountability, no surveillance.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">&#129489;</div>
+      <h3>Discord Integration</h3>
+      <p>Connected to the ShaneBrain Discord bot. Notifications, alerts, and morning briefings.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">&#128200;</div>
+      <h3>SecurityLog + PrivacyAudit</h3>
+      <p>Every gateway event logged to Weaviate. Full audit trail without third-party analytics.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">&#127760;</div>
+      <h3>Public via Tailscale Funnel</h3>
+      <p>Exposed securely over HTTPS at the public URL without opening firewall ports.</p>
+    </div>
+
+  </div>
+
+  <h2>Stack</h2>
+  <div class="stack-grid">
+    <div class="stack-pill"><span>&#9889;</span><span>FastAPI — Python 3.13</span></div>
+    <div class="stack-pill"><span>&#129504;</span><span>Weaviate 1.36.2</span></div>
+    <div class="stack-pill"><span>&#129302;</span><span>Ollama 0.17.7</span></div>
+    <div class="stack-pill"><span>&#127758;</span><span>Tailscale Funnel HTTPS</span></div>
+    <div class="stack-pill"><span>&#128295;</span><span>Raspberry Pi 5 (16 GB)</span></div>
+    <div class="stack-pill"><span>&#128274;</span><span>SQLite sessions</span></div>
+    <div class="stack-pill"><span>&#129489;</span><span>Discord.py</span></div>
+    <div class="stack-pill"><span>&#128203;</span><span>nomic-embed-text 768-dim</span></div>
+  </div>
+
+  <h2>Privacy Commands</h2>
+  <div class="commands-block">
+    <div class="cmd">OPTOUT <span>— remove yourself from the leaderboard and analytics</span></div>
+    <div class="cmd">ANON <span>— anonymize your stored conversation data</span></div>
+    <div class="cmd">FORGET <span>— delete all your data from the platform</span></div>
+  </div>
+
+</main>
+
+<footer>
+  <p>Built by <strong>Shane Brazelton + Claude Anthropic</strong> &middot; GPL v3 &middot; Hazel Green, AL</p>
+  <p><a href="https://github.com/thebardchat">github.com/thebardchat</a></p>
+</footer>
+
+</div>
+
+<!-- Sticky referral bar -->
+<div style="position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(90deg,#060910,#0b1124,#060910);border-top:1px solid #1e3060;padding:0.6rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1.2rem;font-family:monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;"><span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;display:inline-block;"></span><span style="color:#3d5a78;">Try Claude free for 2 weeks —</span><a href="https://claude.ai/referral/4fAMYN9Ing" target="_blank" rel="noopener" style="color:#00b4d8;text-decoration:none;">Start your free trial →</a><span style="color:#3d5a78;">· AI behind this ecosystem</span></div>
+
+<script>
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+// Gentle soft orbs
+for (let i = 0; i < 40; i++) {
+  particles.push({
+    x: Math.random() * 9999, y: Math.random() * 9999,
+    vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
+    r: Math.random() * 3 + 1,
+    alpha: Math.random() * 0.5 + 0.1,
+    color: Math.random() > 0.5 ? '#2dd4bf' : '#38bdf8'
+  });
+}
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x = ((p.x + p.vx + W) % W);
+    p.y = ((p.y + p.vy + H) % H);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = p.alpha;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
