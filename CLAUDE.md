@@ -128,7 +128,7 @@ This project would not exist without:
 
 ## Project Owner
 
-Shane Brazelton — dump truck dispatcher in Meridianville, Alabama building AI infrastructure for families. Direct communicator. Solutions over explanations.
+Shane Brazelton — concrete dispatch operator in Meridianville, Alabama building AI infrastructure for families. Direct communicator. Solutions over explanations.
 
 ## The Mission
 
