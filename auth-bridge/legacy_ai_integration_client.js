@@ -36,7 +36,7 @@ function getLatestSessionContent() {
 
 const TEST_LEGACY_DATA = {
     personality: "Direct, solution-focused, and action-oriented.",
-    knowledge: "Dump truck dispatch, North Alabama, Pulsar AI structure.",
+    knowledge: "concrete dispatch, North Alabama, Pulsar AI structure.",
     relationships: "Father of 5 sons (primary motivation).",
     messages: getLatestSessionContent() // Reads the actual conversation content
 };
