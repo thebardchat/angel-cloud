@@ -1,166 +1,96 @@
 # CLAUDE.md — Angel Cloud Project Context
 
-> **Updated:** March 12, 2026
-> **Version:** 1.0
-> **Owner:** Shane Brazelton (SRM Dispatch, Alabama)
+> **Updated:** 2026-06-13 · **Version:** 2.0 · **Owner:** Shane Brazelton (Hazel Green, Alabama)
 > **Repo:** github.com/thebardchat/angel-cloud
-> **Constitution:** [thebardchat/constitution](https://github.com/thebardchat/constitution) — the single source of truth for all ShaneBrain ecosystem projects
+> **Vision source of truth:** [`angel-cloud-spec.md`](./angel-cloud-spec.md) (locked v1.0)
+> **Governance:** [thebardchat/constitution](https://github.com/thebardchat/constitution) — nine pillars, the single source of truth for all ShaneBrain projects.
 
 ## What Is This Project?
 
-Angel Cloud — a mental wellness communication platform named after Angel Brazelton. Part of the ShaneBrain ecosystem. Node.js/Express backend (port 5000) with Flask auth bridge (port 3005), Mongoose/MongoDB models, AI sentiment analysis, angel progression system, and Google Sheets sync for SRM Dispatch operations. Local-first, privacy-first.
+Angel Cloud — a **faith-rooted, local-first mental-wellness and creative safe haven**, the public face of ShaneBrain. Named after Angel Brazelton. You don't log in; you prove an uplifting state of being and earn your way in (the security filter and the human filter are the same gate). Read [`angel-cloud-spec.md`](./angel-cloud-spec.md) before making architectural or vision decisions — it governs.
 
-## Constitution
+## ⚠️ Read Before You Build — this repo has legacy layers
 
-All thebardchat repositories follow the [ShaneBrain Constitution](https://github.com/thebardchat/constitution) — nine pillars governing faith, family, sobriety, local-first AI, pragmatic shipping, serving left-behind users, open-source defaults, ADHD-aware design, and gratitude as infrastructure. One link. One source. No drift.
+Earlier iterations were a **different thing**: a Node/Express + MongoDB/Firestore + Google Sheets dispatch tool with Ollama/Gemini and a 3D welcome center. **All of that is superseded.** See [`LEGACY.md`](./LEGACY.md) and the `legacy/` folder. Do NOT build on, extend, or copy patterns from:
+- Ollama / Llama (removed 2026-04-30) — embeddings are **text2vec-transformers / all-MiniLM-L6-v2** only
+- Firestore or MongoDB as a primary store — persistence is **Weaviate**
+- Google Sheets / Drive dependency or service-account delegation
+- The "LogiBot / SRM dispatch" identity — that's a **separate project** now
+- The 3D welcome center — the front door is locked **1998 / AOL retro, 2D** (3D / Roblox rejected)
 
-## Hardware (All thebardchat Repos)
+## Architecture (current)
 
-All thebardchat projects run on the same physical infrastructure:
+**The ShaneBrain Engine = Claude (intelligence) + Weaviate (memory) + MCP (nervous system) + text2vec-transformers / MiniLM (local embeddings).** Local-first, zero-knowledge, owned hardware over Tailscale. A hosted lane serves people who can't self-host.
 
-| Component | Spec |
-|-----------|------|
-| Board | Raspberry Pi 5, 16GB RAM |
-| Case | Pironman 5-MAX |
-| Storage | NVMe RAID 1 — 2x WD Blue SN5000 2TB (mdadm) |
-| RAID Path | `/mnt/shanebrain-raid/` |
-| Core Path | `/mnt/shanebrain-raid/shanebrain-core/` |
-| External | 8TB at `/media/shane/ANGEL_CLOUD` (NTFS via ntfs-3g) |
-| Network | Wired ethernet, Tailscale VPN |
-| Power | Always-on, 27W USB-C |
-| Architecture | ARM64 (aarch64) |
+## Identity Arc (current — per spec §15)
 
-## Project Structure
+**New Born → Born Again → Angel[Name].**
+- **New Born** — enters under a *given* handle drawn from the Gospels + a hope-verse number (e.g. `DoveofJordan4031`). Grounded, cared for, no wings.
+- **Born Again** — earned over time (peer-confirmed Uplifts + verified Missions + Halo threshold + mentor vouch + a Ceremony). Cannot be faked or clicked.
+- **Angel[Name]** — claims their own name and their wings (trust + power).
+- **The rule:** *Care is never gated. Power always is.*
 
-```
-angel-cloud/
-├── angel_cloud_server.js    # Express API (port 5000) — users, auth, messaging, AI sentiment
-├── models/                  # Mongoose schemas (User, Angel, Message)
-├── routes/                  # API routes (auth, users, messaging, angels, AI)
-├── services/                # Sentiment analysis, angel matching, notifications
-├── middleware/               # JWT auth middleware
-├── automation/               # Memory auto-save system
-├── auth-bridge/              # SSO + security bridge (port 3005)
-│   ├── angel-auth-bridge.js  # JWT auth, Pulsar wallet verification, encrypted vaults
-│   ├── angel_chat_v2.js      # ShaneBrain Legacy AI chatbot (Gemini)
-│   ├── dispatch_calculator_service.js  # AI dispatch time windows
-│   └── logistics_api/        # Flask haul rate quoting API (port 5001)
-├── welcome/                  # 3D Welcome Center (Three.js, registration flow)
-├── 3D Face/                  # CRT-style digital avatar interface
-├── google_sheets_sync.py     # SRM Dispatch data sync to Firestore
-└── life_command_center_sync.py  # Personal finance/family sync
-```
+> The old 6-tier ladder (Young / Growing / Helping / Guardian Angel) is **superseded as the identity model**. Those names are candidates for **Halo trust levels** inside Angel-hood — but the spec's three-stage arc governs.
 
-## Services
+## Where It Runs
 
-| Service | Port | Description |
-|---------|------|-------------|
-| Angel Cloud API | 5000 | Express — users, auth, messaging, AI sentiment |
-| Auth Bridge | 3005 | Flask SSO — JWT, Pulsar wallet, encrypted vaults |
-| Logistics API | 5001 | Flask — haul rate quoting for SRM Dispatch |
-
-## Angel Progression System
-
-New Born → Young Angel → Growing Angel → Helping Angel → Guardian Angel → Angel
-
-## Key Files
-
-- `angel_cloud_server.js` — Main Express API server
-- `auth-bridge/angel-auth-bridge.js` — SSO and security bridge
-- `auth-bridge/angel_chat_v2.js` — Legacy AI chatbot (Gemini)
-- `auth-bridge/dispatch_calculator_service.js` — Dispatch time window calculator
-- `google_sheets_sync.py` — SRM Dispatch Google Sheets → Firestore sync
-- `life_command_center_sync.py` — Personal finance/family data sync
-- `ai-mission-statement.md` — Core mission, architecture, operational logic
-- `SYNC_README.md` — Data synchronization documentation
+- **gulfshores** — primary dev box. The one editable working clone lives here; Claude Code runs here.
+- **shanebrain (Pi 5, Pironman 5-MAX, NVMe RAID 1)** — orchestrator + MCP server + the deployed/running copy (pulled from GitHub, separate from the dev clone). Core path: `/mnt/shanebrain-raid/shanebrain-core/`. ARM64 (aarch64).
+- **GitHub** — single source of truth / hub. Push & pull through GitHub; never rsync the working dir between nodes.
+- Remote access via **Tailscale**, not port forwarding.
 
 ## Ecosystem Projects
 
-| Project | Repo | Status | Description |
-|---------|------|--------|-------------|
-| ShaneBrain Core | shanebrain-core | Active | Central AI orchestrator, Discord bot, social bot |
-| Angel Cloud | angel-cloud | Active | Mental wellness platform (this repo) |
-| Pulsar Sentinel | pulsar_sentinel | Active | Post-quantum security framework |
-| AI-Trainer-MAX | AI-Trainer-MAX | Active | Modular AI training platform |
-| Constitution | constitution | Active | Governance — nine pillars, single source of truth |
+| Project | Repo | Description |
+| --- | --- | --- |
+| ShaneBrain Core | shanebrain-core | Central AI orchestrator, Discord bot, social bot |
+| Angel Cloud | angel-cloud | Mental-wellness safe haven (this repo) |
+| Pulsar Sentinel | pulsar_sentinel | Post-quantum security framework |
+| AI-Trainer-MAX | AI-Trainer-MAX | Modular AI training platform |
+| Constitution | constitution | Governance — nine pillars, single source of truth |
 
-## Guidelines
+## Claude Code Rules
 
-- Optimize for ARM64 (aarch64) architecture
-- Node.js backend, keep routes modular
-- Never suggest cloud dependencies unless explicitly asked
-- All data stays local on RAID when possible
-- NEVER commit `.env` files — all secrets live in `.env`
-- NEVER hardcode passwords or API keys in scripts
-- Keep repos PRIVATE until production ready
-- Use Tailscale for remote access, not port forwarding
-- Follow the Constitution's nine pillars for all decisions
+- Commit and push directly to `main`. Do NOT create branches.
+- Run build/test commands before committing.
+- **Confirm with Shane before moving or deleting ANY file** during the repo reconciliation. When unsure whether a file is legacy or a keeper, leave it and ask.
+- Update the CLAUDE.md session log before the final commit.
 
-## Common Commands
+## General Workflow Rules
 
-```bash
-# Install dependencies
-npm install
-pip install -r requirements.txt
+- Before setting up repos, SSH keys, or services, check what's already configured: `ls ~/.ssh/`, `git remote -v`, `tailscale status`. Never assume fresh setup.
+- One thing at a time. Don't suggest other improvements until the current goal is fully verified working.
+- Before applying a change across all files, show the result on one file first so Shane can verify the approach.
 
-# Start Express API (port 5000)
-npm start
+## Git
 
-# Start Auth Bridge (port 3005)
-node auth-bridge/angel-auth-bridge.js
+- For conflicts, verify `--theirs` vs `--ours` semantics before applying. State which version you're keeping and why before running the command.
 
-# Run Google Sheets sync
-python google_sheets_sync.py
+## Creative Writing
 
-# Run Life Command Center sync
-python life_command_center_sync.py
-```
+- Never overwrite or rewrite Shane's creative voice, prose style, or intentional structural choices. Ask before any stylistic change to creative files.
+
+## Raspberry Pi Environment
+
+- Python 3.13 removed the `cgi` module. Piper TTS needs careful `noise_scale` tuning to avoid clipping. `aplay` conflicts with PipeWire — prefer `pw-play` or `paplay`.
+
+## Security
+
+- NEVER commit `.env` (it must be in `.gitignore`). NEVER hardcode passwords or API keys.
+- This repo is **public** — keep secrets and internal IPs out of committed files.
+
+## Owner / Mission
+
+Shane Brazelton — concrete dispatch operator in Hazel Green, Alabama, building AI infrastructure for families. Direct communicator, solutions over explanations. **Mission:** 800 million users losing security updates; prove affordable local AI works; mental wellness + security + digital legacy for every family.
+
+**Ko-fi:** ko-fi.com/shanebrain · **Discord:** discord.gg/xbHQZkggU7
 
 ## Credits
 
-This project would not exist without:
+- **[Claude](https://claude.ai)** (Anthropic) — AI co-builder and thinking companion
+- **[Raspberry Pi Foundation](https://www.raspberrypi.org)** — affordable local compute
+- **[Pironman 5-MAX](https://www.sunfounder.com)** (SunFounder) — NVMe RAID chassis
 
-- **[Claude](https://claude.ai)** (Anthropic) — AI co-builder, code partner, and thinking companion
-- **[Raspberry Pi Foundation](https://www.raspberrypi.org)** — affordable local compute that proves you don't need a data center
-- **[Pironman 5-MAX](https://www.sunfounder.com/products/pironman-5-max)** (SunFounder) — NVMe RAID chassis that makes Pi 5 a real server
-- **[WD Blue SN5000](https://www.westerndigital.com)** (Western Digital) — reliable NVMe storage, 2x 2TB in RAID 1
-- **[mdadm](https://raid.wiki.kernel.org)** — Linux software RAID that keeps the data safe
+## Session Log
 
-## Project Owner
-
-Shane Brazelton — concrete dispatch operator in Meridianville, Alabama building AI infrastructure for families. Direct communicator. Solutions over explanations.
-
-## The Mission
-
-800 million Windows users losing security updates. ShaneBrain proves affordable local AI works. Angel Cloud: mental wellness + security + digital legacy for every family.
-
-## Contact
-
-**Owner:** Shane Brazelton
-**Company:** SRM Dispatch (Alabama)
-**Ko-fi:** ko-fi.com/shanebrain
-**Discord:** discord.gg/xbHQZkggU7
-**Mission:** 800 million users. Digital legacy for generations.
-
-## Claude Code Rules
-- Commit and push directly to `main`. Do NOT create branches.
-- Run build/test commands before committing.
-- Update CLAUDE.md session log before final commit.
-
-
-## Networking / Deployment
-- When working with Tailscale Funnel, remember it strips URL path prefixes. Always use hardcoded base paths rather than server-side form action prefixing for routing.
-
-## Creative Writing
-- Never overwrite or rewrite the user's creative voice, prose style, or intentional structural choices (e.g., missing notes, dialogue rhythm). Ask before making stylistic changes to creative writing files.
-
-## General Workflow Rules
-- Before setting up repos, SSH keys, or services, check what's already configured on the current machine. Run `ls ~/.ssh/`, `git remote -v`, `tailscale status`, etc. before assuming fresh setup is needed.
-- Let's focus on one thing at a time. Don't suggest other improvements until the current goal is fully verified working.
-- Before applying changes to all files, show the result on one file first so Shane can verify the approach.
-
-## Git
-- For git conflicts, always verify --theirs vs --ours semantics before applying. State which version you're keeping and why before running the command.
-
-## Raspberry Pi Environment
-- This user runs services on Raspberry Pi. Be aware: Python 3.13 removed the `cgi` module, Piper TTS needs careful noise_scale tuning to avoid clipping, and aplay conflicts with PipeWire. Prefer `pw-play` or `paplay` for audio playback.
+- 2026-06-13 — CLAUDE.md v2.0: reconciled to the locked spec (Weaviate + MCP + MiniLM; New Born → Born Again → Angel[Name]; retro AOL front door). Flagged legacy Node/Mongo/Firestore/Ollama/3D layers for quarantine. Durable workflow/git/Claude-Code rules retained.
