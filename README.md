@@ -1,453 +1,71 @@
-<div align="center"><img src=".github/assets/banner.png" alt="Angel Cloud" width="100%"></div>
-
-> **Try Claude free for 2 weeks** — the AI powering this ecosystem. [Start your free trial →](https://claude.ai/referral/4fAMYN9Ing)
-
-![social card](assets/social-card.jpg)
+![Angel Cloud](.github/assets/banner.png)
 
 [![Constitution](https://img.shields.io/badge/Constitution-ShaneTheBrain-blue)](https://github.com/thebardchat/constitution)
-[![CI/CD](https://github.com/thebardchat/angel-cloud/workflows/LogiBot%20CI%2FCD/badge.svg)](https://github.com/thebardchat/angel-cloud/actions)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![License: Proprietary](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+[![Local-first](https://img.shields.io/badge/local--first-zero--knowledge-success.svg)](#architecture-current)
+[![License: Proprietary](https://img.shields.io/badge/license-Proprietary-red.svg)](./LICENSE)
 
-# Angel Cloud / LogiBot
+# Angel Cloud
 
-> **Try Claude free for 2 weeks** — the AI behind this entire ecosystem. [Start your free trial →](https://claude.ai/referral/4fAMYN9Ing)
+**A faith-rooted, local-first mental-wellness and creative safe haven — the public face of ShaneBrain.**
 
----
+Named after Angel Brazelton. Built for the ~800 million people Big Tech is about to leave behind. Faith. Family. Sobriety. Community.
 
-
-
-**Shane's AI Memory System & Automation Hub - Angel Cloud Intelligence Platform**
-
-## Overview
-
-LogiBot is a **fixed-cost local AI infrastructure** designed to replace $1,000/mo variable cloud costs with a self-hosted solution for SRM Trucking dispatch automation.
-
-### Core Architecture
-
-- **Compute:** Local Llama 3.2 via Ollama (Ubuntu WSL/USB)
-- **Persistence:** Firestore (Layer 2)
-- **Data Source:** Google Sheets (SRM Operations)
-- **Security:** Domain-wide delegation via logibot-worker service account
-- **Auth:** signInWithCustomToken using __initial_auth_token
-
-### Key Features
-
-✅ **Real-time Driver Data Sync** - 19 active drivers synced from Google Sheets
-✅ **Automated Haul Rate Calculation** - `($130/60) * RTM / 25 tons`, rounded to $0.50, min $6.00
-✅ **Local AI Integration** - Ollama + Llama 3.2 for intelligent dispatch
-✅ **Webhook Support** - Instant sync on Google Sheets updates
-✅ **Health Monitoring** - System health checks and alerts
-✅ **Docker Support** - Containerized deployment
-✅ **CI/CD Pipeline** - Automated testing with GitHub Actions
+> **Source of truth:** [`angel-cloud-spec.md`](./angel-cloud-spec.md) is the locked vision. This README is the welcome mat; the spec is the blueprint. If the two ever disagree, the spec wins.
 
 ---
 
-## Quick Start
+## What It Is
 
-### 1. Clone Repository
-```bash
-git clone https://github.com/thebardchat/angel-cloud.git
-cd angel-cloud
-```
+Angel Cloud inverts the login. You don't enter with a password — **you prove an uplifting state of being and earn your way in.** The security filter and the human filter are the same gate. It gamifies *human flourishing* instead of farming attention for clicks.
 
-### 2. Run Setup Script
-```bash
-chmod +x setup.sh
-./setup.sh
-```
+## First Principles
 
-### 3. Configure Environment
-```bash
-# Edit .env with your settings
-nano .env
+- **The filter IS the feature** — entry is a positive reset, not a password
+- **Pro-social, never attention-farming** — reward lifting others up, not engagement
+- **Sovereign by default** — zero-knowledge; your data stays yours, even from us
+- **Local-first** — runs on owned hardware, not someone else's cloud
+- **You own it** — Big Tech rents
+- **Built for the left-behind** — the underserved are the point
 
-# Add Google service account credentials
-cp /path/to/your/credentials.json .
-```
+## How You Move Through It
 
-### 4. Activate Virtual Environment
-```bash
-source venv/bin/activate
-```
+- **The Welcome Center** — one gated door, a warm 1998 / AOL-era feel. **GABE** the doorman reads your state; **Halos** verify trust over time. No standard login.
+- **Identity arc: New Born → Born Again → Angel[Name].** You enter under a handle *given* from the Gospels — a follower's name, a place He walked, an image from His story — sealed with a number that points to a passage of hope (e.g. `DoveofJordan4031` → Isaiah 40:31). You earn your wings and claim your own name at a ceremony.
+- **Halos, not likes** — earned only by real, verified acts that **support, teach, or comfort** another person.
+- **The Crisis Covenant** — if someone is falling, **the machine never acts alone on a life: AI flags, a human decides, always.** Built *with* clinical input, opt-in only. This is the heart of the whole thing.
+- **Angels Build Worlds** — once you're Born Again you build your own customizable space — the creative, self-owned web (the thing MySpace proved people want and Big Tech flattened).
 
-### 5. Run Health Check
-```bash
-python3 health_monitor.py
-```
+## Architecture (current)
 
-### 6. Start LogiBot
-```bash
-# One-time sync
-python3 google_sheets_sync.py
+The **ShaneBrain Engine**: **Claude** (intelligence) + **Weaviate** (memory) + **MCP** (nervous system) + **text2vec-transformers / all-MiniLM-L6-v2** (local embeddings). Local-first, zero-knowledge, running on a Raspberry Pi 5 + mini-PC mesh over Tailscale. A hosted lane exists for people who can't self-host — and making *hosted* still feel like *yours* is the central engineering problem.
 
-# Continuous mode
-python3 logibot_core.py
+> ⚠️ **Legacy note.** Earlier iterations of this repo were a different thing: a Node/Express + MongoDB/Firestore + Google Sheets dispatch tool with Ollama/Gemini. **That era is superseded** — see [`LEGACY.md`](./LEGACY.md). Do **not** build on Ollama, Firestore, MongoDB, or any Google-Sheets/Drive dependency. Embeddings are text2vec-transformers / MiniLM only.
 
-# Webhook receiver
-python3 webhook_receiver.py
-```
-
----
-
-## Project Structure
+## Repo Structure (current bones)
 
 ```
 angel-cloud/
-├── google_sheets_sync.py      # Primary data sync (drivers, plants)
-├── life_command_center_sync.py # Personal finance/family sync
-├── logibot_core.py            # Main orchestrator with Ollama AI
-├── webhook_receiver.py        # Google Sheets webhook handler
-├── health_monitor.py          # System health monitoring
-├── config.py                  # Centralized configuration
-├── logger.py                  # Logging utilities
-├── test_sync.py              # Unit tests
-├── requirements.txt          # Python dependencies
-├── setup.sh                  # Automated installation
-├── Dockerfile                # Docker image definition
-├── docker-compose.yml        # Multi-container setup
-├── .env.example              # Environment variables template
-├── SCHEMA.md                 # Firestore schema documentation
-├── SYNC_README.md            # Sync setup guide
-├── ai-mission-statement.md   # Shanebrain core memory
-└── logs/                     # Application logs
+├── angel-cloud-spec.md     # THE source of truth (vision, locked)
+├── auth-bridge/            # the Welcome Center gate / trust + security bridge
+├── welcome_center/         # the door — retro Welcome Center + New Born naming
+├── build-our-worlds/       # "Angels Build Worlds" — your customizable space
+├── bots/                   # the MEGA Crew (Arc gatekeeps; the local AI inhabitants)
+├── memory-exports/         # memory continuity
+├── LEGACY.md               # what's superseded — do not build on it
+└── legacy/                 # quarantined pre-pivot code (kept for reference)
 ```
+
+## Status
+
+Vision **locked**. Front door **decided** — retro AOL, 2D (3D / Roblox rejected). Currently building the Welcome Center + New Born naming. See the spec for the full picture.
 
 ---
-
-## Components
-
-### Google Sheets Sync
-Syncs SRM Dispatch data to Firestore.
-
-**Run:**
-```bash
-python3 google_sheets_sync.py
-```
-
-**Collections Updated:**
-- `/artifacts/logibot/public/data/drivers`
-- `/artifacts/logibot/public/data/plants`
-
-**Haul Rate Formula:**
-```
-Rate = ($130 / 60 mins) * Round Trip Minutes / 25 tons
-- Round up to nearest $0.50
-- Minimum: $6.00
-```
-
-### LogiBot Core
-Main orchestrator with continuous sync and AI integration.
-
-**Run:**
-```bash
-python3 logibot_core.py
-```
-
-**Features:**
-- Continuous sync (configurable interval)
-- Ollama AI analysis
-- Graceful shutdown handling
-- Health monitoring integration
-
-### Webhook Receiver
-Flask server for Google Sheets change notifications.
-
-**Run:**
-```bash
-python3 webhook_receiver.py
-```
-
-**Endpoints:**
-- `POST /webhook/sheets` - Google Sheets updates
-- `GET /health` - Health check
-- `POST /webhook/test` - Testing endpoint
-
-### Health Monitor
-System health checks and diagnostics.
-
-**Run:**
-```bash
-python3 health_monitor.py
-```
-
-**Checks:**
-- Firebase/Firestore connectivity
-- Google Sheets API access
-- Ollama service availability
-- Last sync time validation
-- Data counts verification
-
----
-
-## Docker Deployment
-
-### Build Image
-```bash
-docker build -t logibot:latest .
-```
-
-### Run with Docker Compose
-```bash
-docker-compose up -d
-```
-
-**Services:**
-- `logibot` - Main sync orchestrator
-- `webhook` - Webhook receiver (port 8080)
-- `ollama` - Optional local AI service
-
-### View Logs
-```bash
-docker-compose logs -f logibot
-```
-
-### Stop Services
-```bash
-docker-compose down
-```
-
----
-
-## Testing
-
-### Run Unit Tests
-```bash
-pytest test_sync.py -v
-```
-
-### Run with Coverage
-```bash
-pytest test_sync.py -v --cov=. --cov-report=term-missing
-```
-
-### Test Haul Rate Calculation
-```bash
-python3 -c "
-from google_sheets_sync import calculate_haul_rate
-print(f'RTM 90 → \${calculate_haul_rate(90):.2f}')
-print(f'RTM 120 → \${calculate_haul_rate(120):.2f}')
-"
-```
-
----
-
-## Configuration
-
-### Environment Variables
-
-See [.env.example](.env.example) for all configuration options.
-
-**Required:**
-- `GOOGLE_CREDENTIALS_PATH` - Service account JSON file
-- `SRM_DISPATCH_SHEET_ID` - Google Sheets ID
-
-**Optional:**
-- `OLLAMA_BASE_URL` - Ollama API endpoint (default: http://localhost:11434)
-- `WEBHOOK_SECRET` - Webhook signature verification
-- `SYNC_INTERVAL_MINUTES` - Auto-sync interval (default: 5)
-- `LOG_LEVEL` - Logging verbosity (INFO, DEBUG, etc.)
-
-### Firestore Paths
-
-**Public Data:**
-```
-/artifacts/{appId}/public/data/{collectionName}
-```
-
-**Private Data:**
-```
-/artifacts/{appId}/users/{userId}/{collectionName}
-```
-
-See [SCHEMA.md](SCHEMA.md) for complete schema documentation.
-
----
-
-## Automation
-
-### Cron Job (Linux/WSL)
-```bash
-# Run sync every 5 minutes
-*/5 * * * * cd /path/to/angel-cloud && /path/to/venv/bin/python3 google_sheets_sync.py >> logs/cron.log 2>&1
-```
-
-### Windows Task Scheduler
-Create task pointing to:
-```
-python.exe C:\path\to\angel-cloud\google_sheets_sync.py
-```
-
----
-
-## Monitoring
-
-### Health Check
-```bash
-python3 health_monitor.py
-```
-
-### View Logs
-```bash
-tail -f logs/logibot.log
-```
-
-### Check Last Sync
-```bash
-grep "Sync complete" logs/logibot.log | tail -1
-```
-
----
-
-## Troubleshooting
-
-### Authentication Errors
-- Verify `credentials.json` has both Firebase and Sheets API access
-- Check domain-wide delegation for logibot-worker service account
-
-### Ollama Connection Failed
-```bash
-# Check if Ollama is running
-curl http://localhost:11434/api/tags
-
-# Start Ollama (if needed)
-ollama serve
-```
-
-### Firestore Write Failures
-- Check Firebase project settings
-- Verify Firestore security rules allow service account writes
-
-### Google Sheets Access Denied
-- Confirm sheet is shared with service account email
-- Verify Sheet ID in .env is correct
-
----
-
-## Development
-
-### Install Development Dependencies
-```bash
-pip install -r requirements.txt
-pip install black flake8 isort
-```
-
-### Run Linter
-```bash
-flake8 .
-```
-
-### Format Code
-```bash
-black .
-isort .
-```
-
-### Run CI Pipeline Locally
-```bash
-pytest test_sync.py -v --cov=.
-docker build -t logibot:test .
-```
-
----
-
-## Architecture
-
-### Data Flow
-```
-Google Sheets (SRM Dispatch)
-    ↓
-Google Sheets API
-    ↓
-google_sheets_sync.py
-    ↓
-Firestore Collections
-    ↓
-logibot_core.py → Ollama AI
-    ↓
-Intelligent Dispatch Decisions
-```
-
-### Webhook Flow
-```
-Google Sheets Edit
-    ↓
-Apps Script Trigger
-    ↓
-POST /webhook/sheets
-    ↓
-webhook_receiver.py
-    ↓
-Async Sync Trigger
-```
-
----
-
-## Patent: Quantum Legacy AI Stick
-
-**USPTO Status:** Abstract finalized
-**Innovation:** Portable cache/co-processor on USB flash drive
-**License:** Fixed $499 one-time cost
-**Security:** Zero-knowledge session proof via Merkle trees
-**Audit:** Pulsar Sentinel immutable audit logs
-
----
-
-## Contributing
-
-This is a proprietary project. External contributions are not accepted at this time.
-
----
-
-## License
-
-**Proprietary** - All rights reserved.
-© 2026 Shane Brazelton / Angel Cloud Intelligence Platform
-
-See [ai-mission-statement.md](ai-mission-statement.md) for IP protection details.
-
----
-
-## Support
-
-For issues and questions:
-- Review [SYNC_README.md](SYNC_README.md) for setup guidance
-- Check [SCHEMA.md](SCHEMA.md) for data structure
-- Run health checks: `python3 health_monitor.py`
-- Review logs: `tail -f logs/logibot.log`
-
----
-
-**Last Updated:** 2026-01-03
-**Version:** 1.0
-**Maintainer:** Shane Brazelton
-
-**Mission:** Build fixed-cost local AI infrastructure to replace $1,000/mo variable cloud costs.
-
 
 ## Built With
 
-<table>
-  <tr>
-    <td align="center" width="200">
-      <b>Claude by Anthropic</b><br/>
-      <sub>AI partner and co-builder.</sub><br/><br/>
-      <a href="https://claude.ai"><code>claude.ai</code></a>
-    </td>
-    <td align="center" width="200">
-      <b>Raspberry Pi 5</b><br/>
-      <sub>Local AI compute node.</sub><br/><br/>
-      <a href="https://www.raspberrypi.com"><code>raspberrypi.com</code></a>
-    </td>
-    <td align="center" width="200">
-      <b>Pironman 5-MAX</b><br/>
-      <sub>NVMe RAID 1 chassis by Sunfounder.</sub><br/><br/>
-      <a href="https://www.sunfounder.com"><code>sunfounder.com</code></a>
-    </td>
-  </tr>
-</table>
-
----
+| | | |
+| --- | --- | --- |
+| **Claude by Anthropic** — AI partner and co-builder. [`claude.ai`](https://claude.ai) | **Raspberry Pi 5** — local AI compute node. [`raspberrypi.com`](https://www.raspberrypi.com) | **Pironman 5-MAX** — NVMe RAID 1 chassis by SunFounder. [`sunfounder.com`](https://www.sunfounder.com) |
 
 ## Support This Work
 
@@ -455,14 +73,10 @@ If what I'm building matters to you — local AI for real people, tools for the 
 
 - **[Sponsor me on GitHub](https://github.com/sponsors/thebardchat)**
 - **[Buy the book](https://www.amazon.com/Probably-Think-This-Book-About/dp/B0GT25R5FD)** — *You Probably Think This Book Is About You*
-- **Star the repos** — visibility matters for projects like this
+- **Star the repo** — visibility matters for projects like this
 
 Built by **Shane Brazelton** · Co-built with **Claude** (Anthropic) · Hazel Green, Alabama
 
 ---
 
-<div align="center">
-
-*Part of the [ShaneBrain Ecosystem](https://github.com/thebardchat) · Built under the [Constitution](https://github.com/thebardchat/constitution)*
-
-</div>
+*Part of the [ShaneBrain Ecosystem](https://github.com/thebardchat) · Governed by the [Constitution](https://github.com/thebardchat/constitution) — one link, one source, no drift.*
