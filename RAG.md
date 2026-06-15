@@ -1,6 +1,6 @@
 # SHANEBRAIN RAG KNOWLEDGE BASE
 **Purpose**: Retrieval Augmented Generation source for ShaneBrain AI
-**Last Updated**: 2026-02-05
+**Last Updated**: 2026-06-14
 
 ---
 
@@ -55,23 +55,24 @@ Lord, guide my hands as I build. Let these systems serve your purpose. Protect m
 
 ### Architecture Decisions
 - Weaviate for vector storage (local, powerful, free)
-- Ollama for local LLM inference (Llama 3.2)
-- Firebase/Firestore for cloud sync when needed
-- Google Sheets as the source of truth for operations
+- text2vec-transformers / all-MiniLM-L6-v2 for local embeddings (no Ollama/Llama)
+- MCP as the nervous system; Angel Cloud Gateway as the API surface
+- Claude for intelligence (no Gemini)
+- No Firestore/MongoDB primary store and no Google Sheets/Drive dependency — sovereign, zero-knowledge, owned hardware
 - Python for scripts, Node.js for servers
 
 ### The $1000/Month Problem
-Cloud AI costs add up fast. The goal: replace variable cloud costs with fixed local infrastructure. A USB drive with Ollama costs $50 once. ChatGPT Plus costs $20/month forever. Do the math.
+Cloud AI costs add up fast. The goal: replace variable cloud costs with fixed local infrastructure. Local inference on owned hardware is a one-time cost; ChatGPT Plus costs $20/month forever. Do the math.
 
 ---
 
 ## Project Knowledge
 
-### Angel Cloud Network
-A unified intelligence platform combining:
-- **LogiBot**: Operational dispatch automation for SRM Trucking
+### Angel Cloud
+A faith-rooted, local-first mental-wellness and creative safe haven — the public face of ShaneBrain (see `angel-cloud-spec.md`). Related ShaneBrain-ecosystem projects:
 - **ShaneBrain**: Personal AI memory and decision support
 - **Pulsar Sentinel**: Zero-knowledge audit system with Merkle tree immutable logs
+- **LogiBot / SRM dispatch**: a separate, earlier project — not Angel Cloud (see `LEGACY.md`)
 
 ### Quantum Legacy AI Stick (Patent)
 - USPTO Status: Abstract finalized
@@ -135,16 +136,16 @@ A unified intelligence platform combining:
 ## System Memory
 
 ### Key Technical Details
-- Weaviate runs on localhost:8080
-- Node.js server runs on port 5000
+- Weaviate runs on :8080; text2vec-transformers on :8090
+- MCP server on :8100; Angel Cloud Gateway on :4200
 - Python scripts in /scripts folder
 - Memory exports stored in /memory-exports
-- Environment variables in .env file
+- Environment variables in .env file (gitignored, never committed)
 
 ### Important Paths
-- SRM Dispatch Sheet ID: 1V_So_9yzvLBAMjLu0dhtL_7mxCqudMUrkrH8iqRHuJU
-- Google Apps Script webhook for Sheets integration
-- Firebase project: logibot-worker service account
+- Core path on the Pi: /mnt/shanebrain-raid/shanebrain-core/
+- Weaviate schema setup: scripts/setup_weaviate_schema.py
+- RAG import: scripts/import_rag_to_weaviate.py
 
 ### Session Continuity
 When resuming work:
