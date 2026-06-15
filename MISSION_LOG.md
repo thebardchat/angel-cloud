@@ -17,8 +17,9 @@
 | 2a | Reconcile **RAG.md** architecture → Weaviate+MCP+MiniLM; removed exposed SRM Sheet ID + Firebase project | `8d32ef4` |
 | 2b | Rewrite **SCHEMA.md** → real current Weaviate schema (from `scripts/setup_weaviate_schema.py`) | `e8517be` |
 | 3 | Place the 4 prototypes in `welcome_center/` (`welcome.html`, `home.html`, `newborn-namer.html`, `the-well.html`) — Shane supplied them after the first run | `a562f5d` |
+| 4 | **Quarantine** the approved move-list to `/legacy/` via `git mv` (history preserved); add `legacy/README.md` | `4cf13ac` |
 
-All pushed: `19a0307 → 6aa2cda → 8d32ef4 → e8517be → b6972f1 → a562f5d`.
+All pushed: `19a0307 → 6aa2cda → 8d32ef4 → e8517be → b6972f1 → a562f5d → b08e072 → 4cf13ac`.
 
 ### ✅ Phase 1 — already done before this run
 `README.md`, `CLAUDE.md` (v2.0), `LEGACY.md`, and `angel-cloud-spec.md` were **already in the repo** as the correct, reconciled versions (Weaviate+MCP+MiniLM; New Born → Born Again → Angel[Name]; retro AOL 2D front door; legacy map). Internal doc links verified valid. Nothing to redo. (The repo's `angel-cloud-spec.md` is the 20 KB locked v1.0; the 9 KB copy in `~/Downloads` is an older partial — **not** used.)
@@ -26,14 +27,14 @@ All pushed: `19a0307 → 6aa2cda → 8d32ef4 → e8517be → b6972f1 → a562f5d
 ### ✅ Phase 3 — done (commit `a562f5d`)
 Shane dropped the 4 prototypes into the repo root (`angel-cloud-*.html`) after the first run. Moved them into `welcome_center/` with the plan's names: `welcome.html` (front door), `home.html` (hub), `newborn-namer.html` (New Born naming), `the-well.html` (name gallery). The old tracked `angel-cloud-head.html` / `angelcloudwelcome2.0.html` at root are the superseded prototypes — left in place for the Phase-4 move-list.
 
-### 🟡 Phase 4 — investigated only, nothing moved
-Full proposed move-list below. **No `git mv`, no deletes, no moves performed.** Awaiting your approval.
+### ✅ Phase 4 — DONE (commit `4cf13ac`, Shane-approved)
+Moved the **MOVE → /legacy/** bucket via `git mv` (history preserved). The **NEEDS-SHANE** bucket was **left in place** (still pending decisions C/E). See "Phase 4 — what moved & what stayed" and "Phase 5 follow-ups" below.
 
 ### 🚩 CRITICAL FLAGS / decisions I need from you
 - **A — Wrong box.** The plan says the one editable clone lives on **gulfshores**. This is **Pulsar00100**. There was *no* angel-cloud clone here (only `.claude/`), so I cloned via **HTTPS** (SSH to GitHub is denied here) and pushed through GitHub (the sanctioned hub flow — no rsync). Confirm: keep developing on Pulsar, or move the canonical clone to gulfshores and delete this one? (Fully reversible.)
 - **B — RESOLVED.** Phase-3 prototypes supplied by Shane and committed (`a562f5d`).
 - **C — Two "keeper" docs are legacy by content:** `ai-mission-statement.md` and `WELCOME_CENTER.md` are on the plan's KEEP list but their content is 100% the old LogiBot / 3D era. Rewrite to current vision (needs your voice) or quarantine? (I did **not** rewrite them — creative/vision content.)
-- **D — Approve the Phase-4 move-list** before any `git mv`.
+- **D — RESOLVED.** Move-list approved; quarantine executed (`4cf13ac`).
 - **E — Code-level legacy coupling** in two keepers (blogger uses Ollama; auth-bridge imports the dispatch calculator + a missing module) — see Observations. These are code migrations, not doc fixes.
 
 ---
@@ -104,9 +105,21 @@ Full proposed move-list below. **No `git mv`, no deletes, no moves performed.** 
 
 **Phase 3** — Shane supplied the 4 prototypes as `angel-cloud-*.html` in the repo root; moved them into `welcome_center/` (renamed to `welcome.html` / `home.html` / `newborn-namer.html` / `the-well.html`). Verified one first, then the rest. Commit `a562f5d`, pushed.
 
-**Phase 4** — Investigated file-by-file; move-list above. Nothing moved.
+**Phase 4** — Executed the Shane-approved move-list with `git mv` (history preserved). 27 files moved into `/legacy/` (flat for the mutually-importing Python group so intra-group imports still resolve; `models/` → `legacy/models/`; `welcome/` → `legacy/welcome/`; auth-bridge bits → `legacy/auth-bridge/`). Added `legacy/README.md`. Commit `4cf13ac`, pushed. The **NEEDS-SHANE** bucket (3D Face/, ai-mission-statement.md, WELCOME_CENTER.md, bots/blogger, routes/services/middleware, automation, root old prototypes, infra) was **not** touched. `auth-bridge/` keepers retained: `angel-auth-bridge.js`, `launch_angel_cloud.js`, `mega-dashboard.html`, `package.json`, `README.md`, `Shanebrain_Strategist_Tool.ipynb`, `.env.example`, `.gitignore`, `.hintrc`.
+
+### ⚠️ Phase 5 follow-ups — broken references introduced by the move (need cleanup)
+Moving the legacy code left these references (in files that stayed) pointing at moved paths:
+- **CI:** `.github/workflows/test.yml` → `from google_sheets_sync import calculate_haul_rate` — **CI will now fail.** It tests legacy LogiBot code; update the import to `legacy.google_sheets_sync`, or retire/relocate the legacy test.
+- **`test_sync.py`** → imports `google_sheets_sync`, `logibot_core` (both moved). Legacy test; consider moving to `/legacy/` too.
+- **`Dockerfile`** `CMD python3 logibot_core.py` and **`docker-compose.yml`** `command: python3 webhook_receiver.py` → moved. Update or retire (infra bucket).
+- **`setup.sh`** chmod/run of `google_sheets_sync.py`/`logibot_core.py`/`webhook_receiver.py`/`life_command_center_sync.py` + `credentials.json.template` → moved.
+- **`sync_verify.py`** expects `credentials.json.template`, `google_sheets_sync.py`, `logibot_core.py`, `legacy_ai.py`, `training_data_builder.py`, `model_trainer.py` at root → will report them missing.
+- **`auth-bridge/launch_angel_cloud.js`** references `angel_chat_v2.js`; **`auth-bridge/angel-auth-bridge.js`** `require('./dispatch_calculator_service')` — both moved. (angel-auth-bridge.js was already non-runnable: it also `require`s a missing `./pulsar_security_core`.) → Decision E (decouple).
+- **Stale doc refs (NEEDS-SHANE docs):** `ai-mission-statement.md` and `WELCOME_CENTER.md` reference moved files — resolves when Decision C is made.
+
+None of these were auto-edited (outside the approved move-list). They are the Phase-5 / Decision-C/E work.
 
 ---
 
 ## STOP
-Per mission: Phases 0–3 done + Phase-4 move-list written and pushed. **Stopping here. Not executing Phase 4.** Awaiting Decisions A, C, D, E (B resolved).
+Per mission: Phases 0–4 done + pushed. **Stopping here.** Remaining open items: Decisions **A** (Pulsar vs gulfshores), **C** (ai-mission-statement.md / WELCOME_CENTER.md: rewrite vs quarantine), **E** (blogger Ollama→Claude; decouple auth-bridge), and the **Phase-5 broken-reference cleanup** above (notably CI). B and D resolved.
