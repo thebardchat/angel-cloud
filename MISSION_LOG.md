@@ -16,21 +16,22 @@
 | 0 | Untrack `.env` (keys already rotated; `.gitignore` already covered it) | `6aa2cda` |
 | 2a | Reconcile **RAG.md** architecture → Weaviate+MCP+MiniLM; removed exposed SRM Sheet ID + Firebase project | `8d32ef4` |
 | 2b | Rewrite **SCHEMA.md** → real current Weaviate schema (from `scripts/setup_weaviate_schema.py`) | `e8517be` |
+| 3 | Place the 4 prototypes in `welcome_center/` (`welcome.html`, `home.html`, `newborn-namer.html`, `the-well.html`) — Shane supplied them after the first run | `a562f5d` |
 
-All three pushed: `19a0307 → 6aa2cda → 8d32ef4 → e8517be`.
+All pushed: `19a0307 → 6aa2cda → 8d32ef4 → e8517be → b6972f1 → a562f5d`.
 
 ### ✅ Phase 1 — already done before this run
 `README.md`, `CLAUDE.md` (v2.0), `LEGACY.md`, and `angel-cloud-spec.md` were **already in the repo** as the correct, reconciled versions (Weaviate+MCP+MiniLM; New Born → Born Again → Angel[Name]; retro AOL 2D front door; legacy map). Internal doc links verified valid. Nothing to redo. (The repo's `angel-cloud-spec.md` is the 20 KB locked v1.0; the 9 KB copy in `~/Downloads` is an older partial — **not** used.)
 
-### ⛔ Phase 3 — BLOCKED (files do not exist)
-The 4 prototypes (`welcome.html`, `home.html`, `newborn-namer.html`, `the-well.html`) are **not on disk anywhere** — not in the repo, `~/Downloads`, or `~/Desktop`. Per plan they must be re-downloaded from the claude.ai chat or rebuilt from the spec. **Not fabricated.** See Decision B.
+### ✅ Phase 3 — done (commit `a562f5d`)
+Shane dropped the 4 prototypes into the repo root (`angel-cloud-*.html`) after the first run. Moved them into `welcome_center/` with the plan's names: `welcome.html` (front door), `home.html` (hub), `newborn-namer.html` (New Born naming), `the-well.html` (name gallery). The old tracked `angel-cloud-head.html` / `angelcloudwelcome2.0.html` at root are the superseded prototypes — left in place for the Phase-4 move-list.
 
 ### 🟡 Phase 4 — investigated only, nothing moved
 Full proposed move-list below. **No `git mv`, no deletes, no moves performed.** Awaiting your approval.
 
 ### 🚩 CRITICAL FLAGS / decisions I need from you
 - **A — Wrong box.** The plan says the one editable clone lives on **gulfshores**. This is **Pulsar00100**. There was *no* angel-cloud clone here (only `.claude/`), so I cloned via **HTTPS** (SSH to GitHub is denied here) and pushed through GitHub (the sanctioned hub flow — no rsync). Confirm: keep developing on Pulsar, or move the canonical clone to gulfshores and delete this one? (Fully reversible.)
-- **B — Phase-3 prototypes missing** (see above).
+- **B — RESOLVED.** Phase-3 prototypes supplied by Shane and committed (`a562f5d`).
 - **C — Two "keeper" docs are legacy by content:** `ai-mission-statement.md` and `WELCOME_CENTER.md` are on the plan's KEEP list but their content is 100% the old LogiBot / 3D era. Rewrite to current vision (needs your voice) or quarantine? (I did **not** rewrite them — creative/vision content.)
 - **D — Approve the Phase-4 move-list** before any `git mv`.
 - **E — Code-level legacy coupling** in two keepers (blogger uses Ollama; auth-bridge imports the dispatch calculator + a missing module) — see Observations. These are code migrations, not doc fixes.
@@ -101,11 +102,11 @@ Full proposed move-list below. **No `git mv`, no deletes, no moves performed.** 
 
 **Phase 2** — `RAG.md` (`8d32ef4`): fixed "Architecture Decisions", ports, project identity; removed exposed Sheet ID + Firebase project; preserved all family/faith/personal/communication-style content and historical LogiBot notes. `SCHEMA.md` (`e8517be`): replaced the Firestore/LogiBot schema with the actual Weaviate schema (Conversation, LegacyKnowledge, CrisisLog, SessionMemory) mirrored from `scripts/setup_weaviate_schema.py`. Did **not** rewrite legacy-bound docs (`TRAINING.md`, `SYNC_README.md` → quarantine) or code-coupled/keeper-by-name docs (`bots/blogger/README.md`, `ai-mission-statement.md`, `WELCOME_CENTER.md` → Decisions C/E).
 
-**Phase 3** — BLOCKED, files missing (see Summary / Decision B).
+**Phase 3** — Shane supplied the 4 prototypes as `angel-cloud-*.html` in the repo root; moved them into `welcome_center/` (renamed to `welcome.html` / `home.html` / `newborn-namer.html` / `the-well.html`). Verified one first, then the rest. Commit `a562f5d`, pushed.
 
 **Phase 4** — Investigated file-by-file; move-list above. Nothing moved.
 
 ---
 
 ## STOP
-Per mission: Phases 0–3 (where possible) done + Phase-4 move-list written and pushed. **Stopping here. Not executing Phase 4.** Awaiting Decisions A–E.
+Per mission: Phases 0–3 done + Phase-4 move-list written and pushed. **Stopping here. Not executing Phase 4.** Awaiting Decisions A, C, D, E (B resolved).
