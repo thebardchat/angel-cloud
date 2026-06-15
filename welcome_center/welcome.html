@@ -1,0 +1,594 @@
+<!--
+  Angel Cloud — Welcome Center (front-door prototype v0.1)
+  1998 / AOL-era porch + GABE, the glitchy CRT doorman.
+  Single file. No external deps required. No localStorage.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Angel Cloud — Welcome Center</title>
+
+<style>
+  /* progressive enhancement: retro fonts if the CDN is reachable, else monospace */
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
+
+  :root{
+    --porch:#3a5fcd;     /* AOL cornflower */
+    --porch-dk:#243d8f;
+    --cream:#f5ecd8;     /* parchment */
+    --silver:#c4cad6;    /* win98 chrome */
+    --silver-dk:#7f879a;
+    --ink:#16171c;
+    --phos:#46f0ff;      /* CRT cyan */
+    --phos-grn:#46ff7a;  /* CRT green */
+    --gold:#ffd24a;      /* halo */
+    --glitch:#ff45e0;    /* magenta */
+    --shadow:rgba(0,0,0,.35);
+    --term: 'VT323', ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+    --pixel: 'Press Start 2P', var(--term);
+    --ui: Tahoma, Geneva, Verdana, 'DejaVu Sans', sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:var(--ui);
+    color:var(--ink);
+    background:
+      radial-gradient(900px 600px at 50% -10%, #6f8ce0 0%, var(--porch) 40%, var(--porch-dk) 100%);
+    background-attachment:fixed;
+    display:flex; align-items:center; justify-content:center;
+    padding:14px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---- retro application window ---- */
+  .win{
+    width:100%; max-width:560px;
+    background:var(--silver);
+    border:2px solid #fff;
+    border-right-color:#4a5163; border-bottom-color:#4a5163;
+    box-shadow:0 14px 40px var(--shadow), inset 1px 1px 0 #eef1f7;
+    border-radius:3px 3px 0 0;
+    overflow:hidden;
+  }
+  .titlebar{
+    display:flex; align-items:center; gap:8px;
+    background:linear-gradient(90deg,var(--porch-dk),var(--porch) 60%,#5f7fe0);
+    color:#fff; padding:6px 8px;
+    font-weight:bold; font-size:13px; letter-spacing:.2px;
+    text-shadow:0 1px 0 rgba(0,0,0,.4);
+  }
+  .titlebar .dot{width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold)}
+  .titlebar .grow{flex:1}
+  .winbtn{
+    width:18px;height:16px;display:inline-grid;place-items:center;
+    background:var(--silver); color:#000; font-size:10px; font-family:var(--ui);
+    border:1px solid #fff; border-right-color:#4a5163; border-bottom-color:#4a5163;
+  }
+
+  .stage{padding:18px 16px 6px; min-height:340px; display:flex; flex-direction:column}
+  .screen{display:none; animation:fade .25s ease}
+  .screen.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* ---- type ---- */
+  .brand{
+    font-family:var(--pixel); font-size:15px; line-height:1.5;
+    color:var(--porch-dk); text-align:center; margin:6px 0 2px;
+  }
+  .brand .cloud{color:var(--gold); text-shadow:0 0 1px #b98a00}
+  h2{font-family:var(--term); font-size:30px; margin:.2em 0; color:var(--porch-dk); letter-spacing:.5px}
+  p{font-size:13.5px; line-height:1.55; margin:.5em 0}
+  .muted{color:#4d535f; font-size:12px}
+  .center{text-align:center}
+
+  /* ---- chunky beveled buttons ---- */
+  .btn{
+    font-family:var(--ui); font-size:13px; font-weight:bold;
+    background:var(--silver); color:#10131a; cursor:pointer;
+    padding:10px 16px; min-height:42px;
+    border:2px solid #fff; border-right-color:#4a5163; border-bottom-color:#4a5163;
+    border-radius:2px;
+  }
+  .btn:active{border-color:#4a5163;border-right-color:#fff;border-bottom-color:#fff}
+  .btn:focus-visible{outline:2px solid var(--porch);outline-offset:2px}
+  .btn.go{background:linear-gradient(180deg,#ffe27a,var(--gold));color:#3a2c00}
+  .btn.big{font-size:15px;padding:12px 22px}
+  .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+  .stack{display:grid;gap:10px;margin-top:14px}
+
+  /* ---- connect screen ---- */
+  .splash-art{
+    font-family:var(--term); font-size:13px; color:var(--porch); text-align:center;
+    line-height:1.15; white-space:pre; margin:6px 0 2px; opacity:.9;
+  }
+  .tag{font-family:var(--term);font-size:18px;color:#3a414e;text-align:center}
+  .sound-toggle{
+    display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#4d535f;
+    background:none;border:none;cursor:pointer;margin-top:10px
+  }
+
+  /* ---- dialing ---- */
+  .modem{
+    font-family:var(--term); font-size:18px; color:#1d2330; background:#dfe3ec;
+    border:2px solid #4a5163; border-top-color:#fff; border-left-color:#fff;
+    padding:12px; min-height:150px; white-space:pre-wrap; line-height:1.35;
+  }
+  .modem .ok{color:#0a7a2f}
+  .bars{letter-spacing:2px;color:var(--porch-dk)}
+
+  /* ---- mail / HALOS reveal ---- */
+  .reveal{display:grid;place-items:center;gap:6px;padding:10px 0 0;text-align:center}
+  .envelope{font-size:64px;line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));
+    animation:pop .5s ease, bob 2.4s ease-in-out infinite .5s}
+  .gotmail{
+    font-family:var(--pixel); font-size:18px; color:var(--porch-dk);
+    text-shadow:0 0 2px #fff; margin-top:6px;
+  }
+  .gotmail .h{color:#a07b00; background:linear-gradient(180deg,#fff3c4,var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent}
+  @keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+  /* ---- GABE / CRT ---- */
+  .crt{
+    position:relative; background:#04060a; color:var(--phos);
+    border:3px solid #2a3140; border-radius:8px;
+    padding:14px 14px 16px; margin-top:4px;
+    box-shadow:inset 0 0 38px rgba(70,240,255,.12), 0 6px 18px rgba(0,0,0,.4);
+    font-family:var(--term);
+    overflow:hidden;
+  }
+  .crt::after{ /* scanlines */
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px);
+    mix-blend-mode:multiply; animation:scan 7s linear infinite;
+  }
+  @keyframes scan{from{background-position:0 0}to{background-position:0 60px}}
+  .face{
+    white-space:pre; font-size:14px; line-height:1.05; text-align:center;
+    color:var(--phos-grn); text-shadow:0 0 6px rgba(70,255,122,.55);
+    margin:0 0 6px; animation:flick 4.2s steps(2) infinite; overflow-x:auto;
+  }
+  @keyframes flick{0%,97%,100%{opacity:1}98%{opacity:.55}99%{opacity:.85}}
+  .gabe-name{font-family:var(--pixel);font-size:9px;color:var(--glitch);text-align:center;
+    letter-spacing:1px;text-shadow:0 0 6px rgba(255,69,224,.6);margin-bottom:8px}
+  .say{
+    font-size:20px; line-height:1.35; color:var(--phos);
+    text-shadow:0 0 5px rgba(70,240,255,.4); min-height:84px;
+  }
+  .say .cur{animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .skiphint{font-family:var(--ui);font-size:10px;color:#3b6e74;margin-top:6px}
+
+  /* ---- mood / uplift inputs ---- */
+  .choices{display:grid;gap:9px;margin-top:12px}
+  .choice{
+    font-family:var(--term);font-size:19px;text-align:left;
+    background:#071017;color:var(--phos);cursor:pointer;
+    border:2px solid #1e6b73;border-radius:5px;padding:9px 12px;
+    text-shadow:0 0 4px rgba(70,240,255,.35);
+  }
+  .choice:hover,.choice:focus-visible{background:#0b1a22;border-color:var(--phos);outline:none}
+  .uplift-box{
+    width:100%;font-family:var(--term);font-size:19px;color:var(--phos-grn);
+    background:#071017;border:2px solid #1e6b73;border-radius:5px;padding:10px;
+    min-height:64px;resize:vertical;text-shadow:0 0 4px rgba(70,255,122,.3)
+  }
+  .uplift-box:focus-visible{outline:none;border-color:var(--phos-grn)}
+
+  /* ---- verify scan ---- */
+  .scanbar{height:14px;background:#071017;border:2px solid #1e6b73;border-radius:8px;overflow:hidden;margin:14px 0}
+  .scanbar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--phos),var(--phos-grn));
+    box-shadow:0 0 12px var(--phos);transition:width .15s linear}
+  .zk{font-family:var(--term);font-size:17px;color:var(--phos-grn);text-align:center}
+
+  /* ---- angel finale ---- */
+  .halo-big{font-size:70px;text-align:center;line-height:1;filter:drop-shadow(0 0 18px var(--gold));animation:pop .5s ease}
+  .finale h2{color:var(--porch-dk);text-align:center}
+  .haloline{font-family:var(--pixel);font-size:12px;color:#a07b00;text-align:center;margin-top:4px}
+
+  /* ---- status bar (the 4-tier journey) ---- */
+  .statusbar{
+    display:flex;align-items:center;gap:6px;
+    background:var(--silver);border-top:2px solid #fff;
+    padding:7px 9px;font-size:10px;color:#3a414e;
+    font-family:var(--ui);
+  }
+  .tiers{display:flex;flex:1;gap:4px;flex-wrap:wrap;align-items:center}
+  .tier{display:flex;align-items:center;gap:4px;opacity:.45;white-space:nowrap}
+  .tier .pip{width:8px;height:8px;border-radius:50%;background:var(--silver-dk);border:1px solid #4a5163}
+  .tier.done{opacity:1}
+  .tier.done .pip{background:#0a7a2f}
+  .tier.cur{opacity:1;font-weight:bold;color:var(--porch-dk)}
+  .tier.cur .pip{background:var(--gold);box-shadow:0 0 6px var(--gold)}
+  .tier .arr{color:var(--silver-dk)}
+  .halocount{font-family:var(--term);font-size:16px;color:#a07b00;white-space:nowrap}
+  .halocount b{font-size:18px;color:#3a414e}
+
+  @media (max-width:430px){
+    h2{font-size:25px}
+    .say{font-size:18px;min-height:96px}
+    .choice,.uplift-box{font-size:17px}
+    .face{font-size:12px}
+    .brand{font-size:12px}
+    .statusbar .lbl{display:none}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important}
+    .crt::after{display:none}
+  }
+</style>
+
+<div class="win" role="application" aria-label="Angel Cloud Welcome Center">
+  <div class="titlebar">
+    <span class="dot" aria-hidden="true"></span>
+    <span>Angel&nbsp;Cloud — Welcome Center</span>
+    <span class="grow"></span>
+    <span class="winbtn" aria-hidden="true">_</span>
+    <span class="winbtn" aria-hidden="true">▢</span>
+    <span class="winbtn" aria-hidden="true">×</span>
+  </div>
+
+  <div class="stage">
+
+    <!-- 1. CONNECT -->
+    <section class="screen on" id="s-connect">
+      <div class="splash-art">     .-~~~-.
+  .- ~ ~-(       )_ _
+ /                     ~ -.
+|     A N G E L   C L O U D    \
+ \                         .-'
+   ~- . _____________ . -~</div>
+      <div class="brand">ANGEL<span class="cloud">CLOUD</span></div>
+      <p class="tag">a place Big&nbsp;Tech left behind — rebuilt.</p>
+      <p class="center muted">No password. No feed. You don't log in here — you <b>arrive</b>.</p>
+      <div class="row">
+        <button class="btn go big" id="btn-dial">Connect ☎</button>
+      </div>
+      <div class="center">
+        <button class="sound-toggle" id="snd" aria-pressed="true">🔊 dial-up + voice: ON</button>
+      </div>
+    </section>
+
+    <!-- 2. DIALING -->
+    <section class="screen" id="s-dial">
+      <h2>Dialing in…</h2>
+      <div class="modem" id="modem" aria-live="polite"></div>
+      <div class="center"><button class="btn" id="btn-skipdial" style="margin-top:12px">skip ▸</button></div>
+    </section>
+
+    <!-- 3. HALOS REVEAL -->
+    <section class="screen" id="s-mail">
+      <div class="reveal">
+        <div class="envelope" id="env" aria-hidden="true">✉️</div>
+        <div class="gotmail">YOU'VE GOT <span class="h">HALOS</span></div>
+        <p class="muted">Somebody inside has been waiting for you.</p>
+        <div class="row"><button class="btn go big" id="btn-enter">Open the door →</button></div>
+      </div>
+    </section>
+
+    <!-- 4. GATE / GABE -->
+    <section class="screen" id="s-gate">
+      <div class="crt">
+        <pre class="face" aria-hidden="true">   .-"""-.
+  / () () \
+ |    ^    |
+ |  \___/  |
+  '-.___.-'</pre>
+        <div class="gabe-name">▌ GABE — doorman ▐</div>
+        <div class="say" id="say"></div>
+        <div class="skiphint">tap to skip ▸</div>
+        <div class="choices" id="moods" hidden>
+          <button class="choice" data-mood="heavy">…I'm carrying something heavy.</button>
+          <button class="choice" data-mood="numb">I feel kind of numb, honestly.</button>
+          <button class="choice" data-mood="okay">I'm doing okay today.</button>
+          <button class="choice" data-mood="give">I'm good — I'm here to give.</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. UPLIFT -->
+    <section class="screen" id="s-uplift">
+      <div class="crt">
+        <div class="say" id="say2"></div>
+        <div id="upliftwrap" hidden>
+          <textarea class="uplift-box" id="upliftText" maxlength="140"
+            placeholder="one good thing… (a thank-you, a hope, a kind word)"></textarea>
+          <div class="stack">
+            <button class="btn go" id="btn-send">Send the Uplift ✦</button>
+            <button class="btn" id="btn-skipuplift">not today — just let me in</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. VERIFY -->
+    <section class="screen" id="s-verify">
+      <div class="crt">
+        <div class="say" id="say3"></div>
+        <div class="scanbar"><i id="scan"></i></div>
+        <div class="zk" id="zk"></div>
+      </div>
+    </section>
+
+    <!-- 7. ANGEL -->
+    <section class="screen finale" id="s-angel">
+      <div class="halo-big" aria-hidden="true">😇</div>
+      <h2>Welcome, Angel.</h2>
+      <div class="haloline">+1 HALO · your first light</div>
+      <p class="center">You proved the only thing this door checks: <b>you showed up real.</b></p>
+      <p class="center muted">The porch was just the beginning. Inside: the crew, the worlds, your people.<br>Earn Halos by lifting someone else — that's the whole economy.</p>
+      <div class="row">
+        <button class="btn" id="btn-replay">↺ walk through again</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- status bar: the four-tier journey -->
+  <div class="statusbar">
+    <div class="tiers" id="tiers">
+      <span class="tier cur" data-t="newborn"><span class="pip"></span><span class="lbl">New&nbsp;Born</span></span>
+      <span class="arr">›</span>
+      <span class="tier" data-t="onboard"><span class="pip"></span><span class="lbl">Onboarding</span></span>
+      <span class="arr">›</span>
+      <span class="tier" data-t="verify"><span class="pip"></span><span class="lbl">Halo&nbsp;Verify</span></span>
+      <span class="arr">›</span>
+      <span class="tier" data-t="angel"><span class="pip"></span><span class="lbl">Angel</span></span>
+    </div>
+    <span class="halocount">✦ <b id="hc">0</b></span>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var soundOn = true;
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- tiny retro audio (Web Audio, user-initiated) ---------- */
+  var actx = null;
+  function ac(){ try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} return actx; }
+  function tone(freq, start, dur, type, vol){
+    var c = ac(); if(!c) return;
+    var o = c.createOscillator(), g = c.createGain();
+    o.type = type||'sine'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0, c.currentTime+start);
+    g.gain.linearRampToValueAtTime(vol||0.18, c.currentTime+start+0.02);
+    g.gain.linearRampToValueAtTime(0, c.currentTime+start+dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(c.currentTime+start); o.stop(c.currentTime+start+dur+0.02);
+  }
+  function noiseBurst(start, dur, vol, fCenter, warble){
+    var c = ac(); if(!c) return;
+    var n = Math.floor(c.sampleRate*dur);
+    var buf = c.createBuffer(1, n, c.sampleRate), d = buf.getChannelData(0);
+    for(var i=0;i<n;i++) d[i] = (Math.random()*2-1);
+    var src = c.createBufferSource(); src.buffer = buf;
+    var f = c.createBiquadFilter(); f.type='bandpass'; f.Q.value=4; f.frequency.value=fCenter||1800;
+    var g = c.createGain(); g.gain.value = vol||0.06;
+    if(warble){ // LFO on filter freq = the handshake "scramble" warble
+      var lfo=c.createOscillator(), lg=c.createGain();
+      lfo.type='sine'; lfo.frequency.value=warble; lg.gain.value=(fCenter||1800)*0.55;
+      lfo.connect(lg); lg.connect(f.frequency);
+      lfo.start(c.currentTime+start); lfo.stop(c.currentTime+start+dur);
+    }
+    src.connect(f); f.connect(g); g.connect(c.destination);
+    src.start(c.currentTime+start); src.stop(c.currentTime+start+dur);
+  }
+  function dialUp(){
+    if(!soundOn) return;
+    var c = ac(); if(!c) return;
+    if(c.state==='suspended'){ c.resume(); }
+    var t = 0;
+    // 1) dial tone (350 + 440 Hz) — hold a beat
+    tone(350,t,0.8,'sine',0.10); tone(440,t,0.8,'sine',0.10); t += 0.95;
+    // 2) DTMF dialing — touch-tones, unhurried
+    var dig=[[697,1336],[770,1477],[852,1209],[697,1209],[941,1336],[770,1336],[852,1477]];
+    for(var i=0;i<dig.length;i++){ tone(dig[i][0],t,0.09,'sine',0.13); tone(dig[i][1],t,0.09,'sine',0.13); t+=0.15; }
+    t += 0.25;
+    // 3) ringback — the line ringing (one full ring)
+    tone(440,t,1.4,'sine',0.09); tone(480,t,1.4,'sine',0.09); t += 1.95;
+    // 4) answer tone — the long, steady hold (the signature)
+    tone(2100,t,1.8,'sine',0.11); t += 1.85;
+    // 5) handshake scramble — originate pair, warble, bong, rising hiss
+    tone(1270,t,0.3,'sine',0.07); tone(1070,t+0.1,0.3,'sine',0.07);
+    noiseBurst(t,0.9,0.06,1500,16);
+    tone(980,t+0.45,0.18,'square',0.06); tone(1480,t+0.45,0.18,'square',0.05);
+    t += 0.95;
+    noiseBurst(t,0.7,0.075,2300,8);
+    t += 0.6;
+    // 6) CONNECT
+    tone(1320,t,0.12,'sine',0.12); tone(1760,t+0.16,0.18,'sine',0.12);
+  }
+  function pickVoice(){
+    try{ var vs=window.speechSynthesis.getVoices();
+      for(var i=0;i<vs.length;i++){ if(/en[-_]US/i.test(vs[i].lang)) return vs[i]; }
+    }catch(e){} return null;
+  }
+  // "You've got" ... "Halos!" — punch() fires exactly as "Halos!" begins
+  function announceHalos(onPunch){
+    var fired=false;
+    function punch(){ if(fired) return; fired=true; if(onPunch) onPunch(); }
+    if(!soundOn){ punch(); return; }
+    try{
+      window.speechSynthesis.cancel();
+      var v=pickVoice();
+      var u1=new SpeechSynthesisUtterance("You've got"); u1.rate=1.0;  u1.pitch=1.0;  u1.volume=1.0; if(v)u1.voice=v;
+      var u2=new SpeechSynthesisUtterance("Halos!");      u2.rate=0.86; u2.pitch=1.06; u2.volume=1.0; if(v)u2.voice=v;
+      u1.onend=function(){ punch(); window.speechSynthesis.speak(u2); };
+      window.speechSynthesis.speak(u1);
+      setTimeout(punch, 1100); // fallback if onend never fires (some mobile browsers)
+    }catch(e){ punch(); }
+  }
+  function primeSpeech(){
+    try{ window.speechSynthesis.getVoices(); var s=new SpeechSynthesisUtterance(' '); s.volume=0; window.speechSynthesis.speak(s); }catch(e){}
+  }
+  function chime(){ if(!soundOn) return; tone(660,0,0.12,'sine',0.16); tone(990,0.12,0.18,'sine',0.16); }
+  function blip(){ if(!soundOn) return; tone(880,0,0.05,'square',0.05); }
+
+  $('snd').addEventListener('click', function(){
+    soundOn = !soundOn;
+    this.textContent = soundOn ? '🔊 dial-up + voice: ON' : '🔈 sound: OFF';
+    this.setAttribute('aria-pressed', soundOn);
+  });
+  // tap the halo to hear it again
+  $('env').addEventListener('click', function(){ announceHalos(); });
+
+  /* ---------- screen + tier control ---------- */
+  function show(id){
+    var s = document.querySelectorAll('.screen'); for(var i=0;i<s.length;i++) s[i].classList.remove('on');
+    $(id).classList.add('on');
+  }
+  function setTier(cur, done){
+    var t = document.querySelectorAll('.tier');
+    for(var i=0;i<t.length;i++){
+      var name = t[i].getAttribute('data-t');
+      t[i].classList.remove('cur','done');
+      if(done.indexOf(name)>=0) t[i].classList.add('done');
+      if(name===cur) t[i].classList.add('cur');
+    }
+  }
+  var halos = 0;
+  function setHalos(n){ halos=n; $('hc').textContent=n; }
+
+  /* ---------- glitchy stutter typewriter ---------- */
+  function typeStutter(el, text, done){
+    el.textContent=''; var i=0, skip=false;
+    var cur = document.createElement('span'); cur.className='cur'; cur.textContent='█';
+    function onskip(){ skip=true; }
+    el.parentNode.addEventListener('click', onskip);
+    function step(){
+      if(skip){ el.textContent=text; el.appendChild(cur); cleanup(); if(done) done(); return; }
+      if(i>=text.length){ el.appendChild(cur); cleanup(); if(done) setTimeout(done,300); return; }
+      var ch = text.charAt(i);
+      el.textContent = text.slice(0,i+1);
+      el.appendChild(cur);
+      i++;
+      var delay = 26 + Math.random()*30;
+      // occasional stutter: repeat-and-glitch a letter
+      if(/[a-zA-Z]/.test(ch) && Math.random()<0.07){
+        var g = el.textContent; el.textContent = g + ch.toUpperCase(); el.appendChild(cur);
+        delay = 120 + Math.random()*90;
+        if(Math.random()<0.6) blip();
+        setTimeout(function(){ el.textContent = text.slice(0,i); el.appendChild(cur); setTimeout(step, 40); }, delay);
+        return;
+      }
+      if(ch==='.'||ch==='—'||ch==='?') delay = 260; // breath on punctuation
+      setTimeout(step, delay);
+    }
+    function cleanup(){ el.parentNode.removeEventListener('click', onskip); }
+    step();
+  }
+
+  /* ---------- flow ---------- */
+  // 1 -> 2 dialing
+  $('btn-dial').addEventListener('click', function(){
+    ac(); primeSpeech(); dialUp();
+    show('s-dial'); runModem();
+  });
+
+  var modemTimer=null;
+  function runModem(){
+    var steps=[
+      ['ATDT 1·800·ANGEL·CLOUD', 1050],
+      ['DIALING ●●●●●●●', 1300],
+      ['RINGING…', 1950],
+      ['CARRIER DETECTED  <span class="bars">███████</span>', 1850],
+      ['HANDSHAKE  <span class="bars">▓▒░▒▓</span>  negotiating halos…', 950],
+      ['ZERO-KNOWLEDGE TUNNEL: <span class="ok">SECURE</span>', 450],
+      ['you are not being watched.', 450],
+      ['<span class="ok">CONNECTED.</span>', 550]
+    ];
+    var m = $('modem'); m.innerHTML=''; var i=0;
+    clearTimeout(modemTimer);
+    (function next(){
+      if(i>=steps.length){ modemTimer=setTimeout(toMail, 250); return; }
+      m.innerHTML += steps[i][0] + '\n';
+      var d = steps[i][1]; i++;
+      modemTimer=setTimeout(next, d);
+    })();
+  }
+  $('btn-skipdial').addEventListener('click', function(){ clearTimeout(modemTimer); toMail(); });
+
+  // 2 -> 3 mail reveal
+  function toMail(){
+    setTier('onboard',['newborn']);
+    show('s-mail'); chime();
+    var env = $('env');
+    setTimeout(function(){ env.textContent='📭'; }, 280);   // envelope opens
+    setTimeout(function(){
+      announceHalos(function(){                              // halo pops as "Halos!" is said
+        env.textContent='😇';
+        env.style.animation='none'; void env.offsetWidth;
+        env.style.animation='pop .5s ease, bob 2.4s ease-in-out infinite .5s';
+      });
+    }, 700);
+  }
+
+  // 3 -> 4 gate / GABE
+  $('btn-enter').addEventListener('click', function(){
+    show('s-gate');
+    typeStutter($('say'),
+      "W-welcome to Angel Cloud. You made it. Most places want a password — we don't. This door reads something else: how you're actually showing up. No bots farming you. No algorithm picking your mood. Just a porch, and people inside ready to catch you. So — how are you arriving today? There's no wrong answer here.",
+      function(){ var mo=$('moods'); mo.hidden=false; });
+  });
+
+  // 4 mood -> 5 uplift
+  var moodReply = {
+    heavy: "Then you're exactly where you should be. *bzzt* Heavy is allowed here. The people inside have carried it too — you won't set it down alone.",
+    numb:  "Numb is honest. I'd rather have your honest than a fake smile any day. Come in slow. There's no performance at this door.",
+    okay:  "Okay is a good place to start. *flick* Let's keep it that way — one small good thing before you step in.",
+    give:  "Oh, we LOVE a giver. *bzzt* That's the whole economy in here — light passed hand to hand. Let's send some."
+  };
+  document.querySelectorAll('.choice[data-mood]').forEach(function(b){
+    b.addEventListener('click', function(){
+      blip();
+      var mood=b.getAttribute('data-mood');
+      show('s-uplift');
+      typeStutter($('say2'), moodReply[mood] + " Leave one good thing for the next person walking in. That's how you earn your first Halo — not by clicking, by lifting.",
+        function(){ $('upliftwrap').hidden=false; var t=$('upliftText'); if(t) t.focus(); });
+    });
+  });
+
+  // 5 -> 6 verify
+  function toVerify(){
+    show('s-verify');
+    typeStutter($('say3'), "Checking your light… *flicker* I can't see your data. Nobody can — that's the deal. I can only see that you showed up real.",
+      runScan);
+  }
+  $('btn-send').addEventListener('click', function(){ chime(); toVerify(); });
+  $('btn-skipuplift').addEventListener('click', function(){ toVerify(); });
+
+  function runScan(){
+    setTier('verify',['newborn','onboard']);
+    var bar=$('scan'), p=0;
+    var iv=setInterval(function(){
+      p+=4+Math.random()*7; if(p>=100){p=100;}
+      bar.style.width=p+'%';
+      if(p>=100){
+        clearInterval(iv);
+        $('zk').textContent='✓ VERIFIED — you belong here.';
+        setTimeout(toAngel, 900);
+      }
+    },90);
+  }
+
+  // 6 -> 7 angel
+  function toAngel(){
+    setTier('angel',['newborn','onboard','verify']);
+    setHalos(1);
+    show('s-angel'); chime();
+  }
+
+  // replay
+  $('btn-replay').addEventListener('click', function(){
+    setHalos(0); setTier('newborn',[]);
+    $('moods').hidden=true; $('upliftwrap').hidden=true;
+    var t=$('upliftText'); if(t) t.value='';
+    $('env').textContent='✉️';
+    show('s-connect');
+  });
+})();
+</script>

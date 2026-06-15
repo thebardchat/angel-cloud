@@ -1,0 +1,311 @@
+<!--
+  Angel Cloud — HOME (the welcome-screen hub, after the gate)
+  AOL-1998 channel menu + Buddy List (the MEGA crew). Single file. No deps. No localStorage.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Angel Cloud — Home</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
+  :root{
+    --porch:#3a5fcd; --porch-dk:#243d8f; --cream:#f5ecd8; --silver:#c4cad6; --silver-dk:#7f879a;
+    --ink:#16171c; --phos:#46f0ff; --grn:#1c9a4b; --gold:#ffd24a; --glitch:#ff45e0;
+    --term:'VT323',ui-monospace,Menlo,Consolas,monospace;
+    --pixel:'Press Start 2P',var(--term);
+    --ui:Tahoma,Geneva,Verdana,'DejaVu Sans',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    font-family:var(--ui); color:var(--ink);
+    background:radial-gradient(900px 600px at 50% -10%, #6f8ce0 0%, var(--porch) 42%, var(--porch-dk) 100%) fixed;
+    display:flex; align-items:flex-start; justify-content:center; padding:14px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .win{
+    width:100%; max-width:640px; background:var(--silver);
+    border:2px solid #fff; border-right-color:#4a5163; border-bottom-color:#4a5163;
+    box-shadow:0 14px 40px rgba(0,0,0,.35), inset 1px 1px 0 #eef1f7; border-radius:3px 3px 0 0; overflow:hidden;
+  }
+  .titlebar{
+    display:flex; align-items:center; gap:8px;
+    background:linear-gradient(90deg,var(--porch-dk),var(--porch) 60%,#5f7fe0);
+    color:#fff; padding:6px 8px; font-weight:bold; font-size:13px; text-shadow:0 1px 0 rgba(0,0,0,.4);
+  }
+  .titlebar .dot{width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold)}
+  .titlebar .grow{flex:1}
+  .winbtn{width:18px;height:16px;display:inline-grid;place-items:center;background:var(--silver);color:#000;
+    font-size:10px;border:1px solid #fff;border-right-color:#4a5163;border-bottom-color:#4a5163}
+
+  /* welcome bar */
+  .welcome{
+    display:flex; align-items:center; gap:10px; padding:11px 13px;
+    background:linear-gradient(180deg,#fff,#e9edf5);
+    border-bottom:2px solid #4a5163;
+  }
+  .welcome .ava{font-size:30px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2))}
+  .welcome .hi{flex:1}
+  .welcome .hi b{font-family:var(--term);font-size:24px;color:var(--porch-dk);display:block;line-height:1}
+  .welcome .hi span{font-size:11px;color:#5a616e}
+  .halo{font-family:var(--term);font-size:20px;color:#a07b00;white-space:nowrap;text-align:right}
+  .halo b{font-size:24px}
+  .halo span{display:block;font-family:var(--ui);font-size:9px;color:#5a616e}
+
+  .body{display:flex;gap:12px;padding:13px}
+  .main{flex:1.7;min-width:0}
+  .side{flex:1;min-width:0}
+
+  /* mailbox tile */
+  .mailtile{
+    display:flex;align-items:center;gap:11px;cursor:pointer;
+    background:linear-gradient(180deg,#fffce8,#ffe9a8);
+    border:2px solid #fff;border-right-color:#b9952f;border-bottom-color:#b9952f;border-radius:4px;
+    padding:11px 13px;margin-bottom:13px;
+  }
+  .mailtile:active{border-color:#b9952f;border-right-color:#fff;border-bottom-color:#fff}
+  .mailtile .ic{font-size:30px;line-height:1}
+  .mailtile .tx b{font-family:var(--term);font-size:21px;color:#7a5a00;display:block;line-height:1}
+  .mailtile .tx span{font-size:11px;color:#6a5320}
+  .mailtile .badge{margin-left:auto;background:#d23b3b;color:#fff;font-size:11px;font-weight:bold;
+    border-radius:10px;padding:2px 8px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+
+  /* channels */
+  .lbl{font-family:var(--pixel);font-size:9px;color:#3a414e;letter-spacing:1px;margin:2px 0 8px}
+  .channels{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px}
+  .channel{
+    display:flex;flex-direction:column;align-items:flex-start;gap:3px;cursor:pointer;text-align:left;
+    background:var(--silver);color:#11131a;font-family:var(--ui);
+    border:2px solid #fff;border-right-color:#4a5163;border-bottom-color:#4a5163;border-radius:3px;
+    padding:10px 11px;min-height:64px;
+  }
+  .channel:hover{background:#d5dae4}
+  .channel:active{border-color:#4a5163;border-right-color:#fff;border-bottom-color:#fff}
+  .channel:focus-visible{outline:2px solid var(--porch);outline-offset:2px}
+  .channel .ci{font-size:22px;line-height:1}
+  .channel b{font-size:13px}
+  .channel small{font-size:10px;color:#525a68;line-height:1.25}
+
+  /* CTA */
+  .cta{
+    margin-top:13px;display:flex;align-items:center;gap:10px;
+    background:linear-gradient(180deg,#eafbef,#cdeed6);
+    border:2px solid #fff;border-right-color:#3f9d63;border-bottom-color:#3f9d63;border-radius:4px;
+    padding:10px 12px;font-size:12.5px;color:#1d5333;
+  }
+  .cta .ic{font-size:24px}
+  .cta .grow{flex:1}
+  .btn{font-family:var(--ui);font-size:12px;font-weight:bold;background:var(--silver);color:#10131a;cursor:pointer;
+    padding:8px 13px;min-height:38px;border:2px solid #fff;border-right-color:#4a5163;border-bottom-color:#4a5163;border-radius:2px}
+  .btn:active{border-color:#4a5163;border-right-color:#fff;border-bottom-color:#fff}
+  .btn:focus-visible{outline:2px solid var(--porch);outline-offset:2px}
+  .btn.go{background:linear-gradient(180deg,#ffe27a,var(--gold));color:#3a2c00}
+
+  /* buddy list */
+  .buddybox{border:2px solid #4a5163;border-top-color:#fff;border-left-color:#fff;background:#eef1f7;border-radius:4px;overflow:hidden}
+  .buddyhead{font-family:var(--term);font-size:18px;color:#fff;background:linear-gradient(90deg,#2a3140,#46506b);
+    padding:6px 10px;display:flex;align-items:center;gap:7px}
+  .buddyhead .led{width:8px;height:8px;border-radius:50%;background:#3dff7a;box-shadow:0 0 6px #3dff7a}
+  .buddy{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;border-bottom:1px solid #d6dbe5;font-size:13px}
+  .buddy:last-child{border-bottom:none}
+  .buddy:hover{background:#dde3ef}
+  .buddy .on{width:8px;height:8px;border-radius:50%;background:var(--grn);flex:none}
+  .buddy .on.idle{background:#caa53a}
+  .buddy b{font-weight:bold}
+  .buddy small{color:#6a7180;font-size:10px}
+  .buddy .me{margin-left:auto;font-size:9px;color:#8a91a0}
+  .moreonline{padding:7px 10px;font-size:10px;color:#6a7180;font-family:var(--term);font-size:14px;text-align:center}
+
+  /* status bar */
+  .statusbar{display:flex;align-items:center;gap:6px;background:var(--silver);border-top:2px solid #fff;padding:7px 9px;font-size:10px;color:#3a414e}
+  .tiers{display:flex;flex:1;gap:4px;flex-wrap:wrap;align-items:center}
+  .tier{display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .tier .pip{width:8px;height:8px;border-radius:50%;background:#0a7a2f;border:1px solid #0a5a22}
+  .tier.angel{color:var(--porch-dk);font-weight:bold}
+  .tier.angel .pip{background:var(--gold);box-shadow:0 0 6px var(--gold)}
+  .tier .arr{color:var(--silver-dk)}
+  .scount{font-family:var(--term);font-size:16px;color:#a07b00;white-space:nowrap}
+  .scount b{color:#3a414e;font-size:18px}
+
+  /* popup */
+  .overlay{position:fixed;inset:0;background:rgba(20,30,60,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+  .overlay.on{display:flex}
+  .pop{width:100%;max-width:380px;background:var(--silver);border:2px solid #fff;border-right-color:#4a5163;border-bottom-color:#4a5163;
+    border-radius:3px;box-shadow:0 16px 44px rgba(0,0,0,.45);overflow:hidden;animation:rise .18s ease}
+  @keyframes rise{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+  .pophead{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--porch-dk),var(--porch));color:#fff;
+    padding:6px 9px;font-weight:bold;font-size:12.5px}
+  .pophead .grow{flex:1}
+  .popbody{padding:14px;font-size:13px;line-height:1.5}
+  .popbody h3{font-family:var(--term);font-size:22px;color:var(--porch-dk);margin:0 0 6px}
+  .popbody .ci{font-size:30px}
+  .letter{background:#fffdf3;border:1px dashed #c9ad57;border-radius:4px;padding:11px;margin:8px 0;font-size:13px}
+  .letter .from{font-size:10px;color:#8a7330;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+  .popfoot{display:flex;gap:8px;justify-content:flex-end;padding:0 14px 14px;flex-wrap:wrap}
+  .crewline{font-family:var(--term);font-size:19px;color:#0c2a55;background:#e7edf8;border-left:3px solid var(--porch);padding:8px 10px;border-radius:3px}
+
+  @media (max-width:560px){
+    .body{flex-direction:column}
+    .welcome .hi b{font-size:21px}
+    .channel small{display:block}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="win" role="application" aria-label="Angel Cloud Home">
+  <div class="titlebar">
+    <span class="dot" aria-hidden="true"></span><span>Angel&nbsp;Cloud — Home</span>
+    <span class="grow"></span>
+    <span class="winbtn" aria-hidden="true">_</span><span class="winbtn" aria-hidden="true">▢</span><span class="winbtn" aria-hidden="true">×</span>
+  </div>
+
+  <div class="welcome">
+    <div class="ava" aria-hidden="true">😇</div>
+    <div class="hi"><b>Welcome back, Angel.</b><span>Trust: New Wings · you just got here</span></div>
+    <div class="halo">✦ <b id="hc">1</b><span>HALOS</span></div>
+  </div>
+
+  <div class="body">
+    <div class="main">
+
+      <div class="mailtile" id="mail" role="button" tabindex="0">
+        <div class="ic" aria-hidden="true">📬</div>
+        <div class="tx"><b>You've got Uplifts</b><span>someone left light for you</span></div>
+        <div class="badge">1 new</div>
+      </div>
+
+      <div class="lbl">CHANNELS</div>
+      <div class="channels" id="channels">
+        <button class="channel" data-k="uplifts"><span class="ci">✉️</span><b>Uplifts</b><small>send &amp; receive light</small></button>
+        <button class="channel" data-k="healing"><span class="ci">🫂</span><b>Group Healing</b><small>rooms for the weight you carry</small></button>
+        <button class="channel" data-k="world"><span class="ci">🌐</span><b>Your World</b><small>build your own space</small></button>
+        <button class="channel" data-k="missions"><span class="ci">🎯</span><b>Missions</b><small>do good, earn Halos</small></button>
+        <button class="channel" data-k="academy"><span class="ci">🎓</span><b>Academy</b><small>learn · teach · specialize</small></button>
+        <button class="channel" data-k="network"><span class="ci">🛟</span><b>The Network</b><small>mentor &amp; catch others</small></button>
+      </div>
+
+      <div class="cta" id="cta">
+        <div class="ic" aria-hidden="true">🐣</div>
+        <div class="grow"><b>A Newborn just landed at the gate.</b><br>Be the first face they see?</div>
+        <button class="btn go" id="welcomeBtn">Welcome them →</button>
+      </div>
+
+    </div>
+
+    <div class="side">
+      <div class="lbl">THE CREW</div>
+      <div class="buddybox">
+        <div class="buddyhead"><span class="led" aria-hidden="true"></span>Buddy List · online</div>
+        <div class="buddy" data-b="arc"><span class="on" aria-hidden="true"></span><div><b>Arc</b> <small>· gatekeeper</small></div></div>
+        <div class="buddy" data-b="weld"><span class="on" aria-hidden="true"></span><div><b>Weld</b> <small>· builder</small></div></div>
+        <div class="buddy" data-b="bot17"><span class="on" aria-hidden="true"></span><div><b>Bot 17</b> <small>· strategist</small></div></div>
+        <div class="buddy" data-b="neon"><span class="on" aria-hidden="true"></span><div><b>Neon</b> <small>· culture</small></div></div>
+        <div class="buddy" data-b="torch"><span class="on idle" aria-hidden="true"></span><div><b>Torch</b> <small>· idle</small></div></div>
+        <div class="moreonline">+ 12 more online ✦</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <div class="tiers">
+      <span class="tier"><span class="pip"></span>New&nbsp;Born</span><span class="arr">›</span>
+      <span class="tier"><span class="pip"></span>Onboarding</span><span class="arr">›</span>
+      <span class="tier"><span class="pip"></span>Halo&nbsp;Verify</span><span class="arr">›</span>
+      <span class="tier angel"><span class="pip"></span>Angel ★</span>
+    </div>
+    <span class="scount">✦ <b id="hc2">1</b></span>
+  </div>
+</div>
+
+<!-- popup -->
+<div class="overlay" id="overlay">
+  <div class="pop" role="dialog" aria-modal="true" aria-labelledby="popTitle">
+    <div class="pophead"><span id="popTitle">Angel Cloud</span><span class="grow"></span><span class="winbtn" id="popX">×</span></div>
+    <div class="popbody" id="popBody"></div>
+    <div class="popfoot" id="popFoot"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+  var halos=1;
+  function setHalos(n){halos=n;$('hc').textContent=n;$('hc2').textContent=n;}
+  function bump(){ setHalos(halos+1); }
+
+  /* popup */
+  var ov=$('overlay');
+  function pop(title, bodyHTML, footHTML){
+    $('popTitle').textContent=title;
+    $('popBody').innerHTML=bodyHTML;
+    $('popFoot').innerHTML=footHTML||'<button class="btn" data-close>OK</button>';
+    ov.classList.add('on');
+    var f=$('popFoot').querySelector('button'); if(f) f.focus();
+  }
+  function closePop(){ ov.classList.remove('on'); }
+  ov.addEventListener('click',function(e){ if(e.target===ov||e.target.hasAttribute('data-close')||e.target.id==='popX') closePop(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closePop(); });
+
+  /* mailbox -> an Uplift someone left you */
+  function openMail(){
+    pop('✉️  New Uplift',
+      '<div class="letter"><div class="from">From: Pip · New Born · 2 min ago</div>'+
+      '"I almost closed the tab at the door. I\'m really glad I didn\'t. Thank you for being here — for being proof somebody stayed."</div>'+
+      '<p style="font-size:12px;color:#555">This is an <b>Uplift</b>. Send one back and you earn your next Halo — not by clicking, by lifting.</p>',
+      '<button class="btn" data-close>Close</button><button class="btn go" id="sendBack">Send an Uplift back ✦</button>');
+    var sb=$('sendBack');
+    if(sb) sb.addEventListener('click',function(){
+      bump();
+      pop('✦  Light passed on',
+        '<div class="ci" aria-hidden="true">😇</div><h3>+1 Halo</h3>'+
+        '<p>Your Uplift is on its way to Pip. That\'s the whole economy in here — light, handed person to person.</p>'+
+        '<p style="font-size:12px;color:#555">You\'re at <b>'+halos+' Halos</b>. Keep lifting and the deeper tools open up.</p>');
+    });
+  }
+  $('mail').addEventListener('click',openMail);
+  $('mail').addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openMail(); }});
+
+  /* channels */
+  var ch={
+    uplifts:['✉️','Uplifts','Send light. Receive it. Every <b>verified</b> Uplift you send another Angel earns a Halo. Your inbox is already warm.'],
+    healing:['🫂','Group Healing','Private rooms where people carrying the same weight — anxiety, grief, addiction, ADHD — find each other <b>before</b> they fall. Walk in whenever you\'re ready. You won\'t carry it alone.'],
+    world:['🌐','Your World','A blank page that\'s <b>yours</b>. Build it like it\'s 1999 — your colors, your music, your corner of the web. <i>(This is the space we build next.)</i>'],
+    missions:['🎯','Missions','Small, real good deeds — verified, not faked. Do them, earn Halos, climb. Nobody clicks their way up in here.'],
+    academy:['🎓','Academy','Learn to catch someone. Learn to build. Then teach the next Angel. The place teaches itself.'],
+    network:['🛟','The Network','Newborns to mentor. Falling Angels to catch. This is where you stop being new and become a <b>guardian</b>.']
+  };
+  document.querySelectorAll('.channel').forEach(function(b){
+    b.addEventListener('click',function(){
+      var k=b.getAttribute('data-k'), c=ch[k];
+      pop(c[0]+'  '+c[1], '<div class="ci" aria-hidden="true">'+c[0]+'</div><h3>'+c[1]+'</h3><p>'+c[2]+'</p>');
+    });
+  });
+
+  /* crew buddies */
+  var crew={
+    arc:'Arc › "Gate\'s secure. You came in clean — you\'re cleared, Angel. I\'ve got the door."',
+    weld:'Weld › "Whatever you dream up, I\'ll help you build it. Just say the word."',
+    bot17:'Bot 17 › "Strategist online. The crew\'s been expecting you. Welcome to the roster."',
+    neon:'Neon › "yo — welcome in ✦ you\'re one of us now. it\'s good in here."',
+    torch:'Torch › "(idle) ...saw you come through. Good to have you. Back in a sec."'
+  };
+  document.querySelectorAll('.buddy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var who=b.getAttribute('data-b');
+      pop('The Crew', '<div class="crewline">'+crew[who]+'</div>');
+    });
+  });
+
+  /* CTA: welcome a newborn */
+  $('welcomeBtn').addEventListener('click',function(){
+    bump();
+    pop('🐣  You welcomed a Newborn',
+      '<div class="ci" aria-hidden="true">😇</div><h3>+1 Halo</h3>'+
+      '<p>You were the first face a stranger saw when they walked in scared. That\'s the job. That\'s the whole thing.</p>'+
+      '<p style="font-size:12px;color:#555">You\'re at <b>'+halos+' Halos</b>.</p>');
+    var c=$('cta');
+    c.innerHTML='<div class="ic" aria-hidden="true">💛</div><div class="grow"><b>You welcomed them in.</b><br>One more Angel who didn\'t face the door alone.</div>';
+  });
+})();
+</script>

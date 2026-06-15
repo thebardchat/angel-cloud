@@ -1,0 +1,235 @@
+<!--
+  Angel Cloud — THE NAMING (New Born name generator)
+  Names sourced from the Gospels (the books about Jesus) + a number that points to a passage of hope.
+  Username/handle form. Single file. No deps. No localStorage. generate() lifts into the real app.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Angel Cloud — The Naming</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=EB+Garamond:ital@0;1&display=swap');
+  :root{
+    --porch:#3a5fcd; --porch-dk:#243d8f; --silver:#c4cad6; --ink:#16171c;
+    --gold:#c89b3c; --gold-lt:#e7c25e; --parch:#f6efdd; --parch-dk:#ece0c2; --sepia:#5b4a2a;
+    --term:'VT323',ui-monospace,monospace; --pixel:'Press Start 2P',var(--term);
+    --ui:Tahoma,Geneva,Verdana,sans-serif; --serif:'EB Garamond',Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    font-family:var(--ui); color:var(--ink);
+    background:radial-gradient(900px 600px at 50% -10%, #6f8ce0 0%, var(--porch) 42%, var(--porch-dk) 100%) fixed;
+    display:flex; align-items:flex-start; justify-content:center; padding:14px; -webkit-font-smoothing:antialiased;
+  }
+  .win{width:100%;max-width:520px;background:var(--silver);border:2px solid #fff;border-right-color:#4a5163;border-bottom-color:#4a5163;
+    box-shadow:0 14px 40px rgba(0,0,0,.35),inset 1px 1px 0 #eef1f7;border-radius:3px 3px 0 0;overflow:hidden}
+  .titlebar{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--porch-dk),var(--porch) 60%,#5f7fe0);
+    color:#fff;padding:6px 8px;font-weight:bold;font-size:13px;text-shadow:0 1px 0 rgba(0,0,0,.4)}
+  .titlebar .dot{width:11px;height:11px;border-radius:50%;background:var(--gold-lt);box-shadow:0 0 6px var(--gold-lt)}
+  .titlebar .grow{flex:1}
+  .winbtn{width:18px;height:16px;display:inline-grid;place-items:center;background:var(--silver);color:#000;font-size:10px;
+    border:1px solid #fff;border-right-color:#4a5163;border-bottom-color:#4a5163}
+
+  .stage{padding:18px 16px}
+  .intro{text-align:center}
+  .intro .lead{font-family:var(--term);font-size:26px;color:var(--porch-dk);line-height:1.1;margin:4px 0 6px}
+  .intro p{font-size:13px;line-height:1.55;color:#39414e;margin:.5em 2px}
+
+  .scroll{
+    position:relative; background:radial-gradient(120% 90% at 50% 0%, var(--parch) 60%, var(--parch-dk) 100%);
+    border:2px solid var(--gold); border-radius:6px;
+    box-shadow:inset 0 0 30px rgba(140,110,40,.18), 0 8px 22px rgba(0,0,0,.3);
+    padding:30px 18px 24px; margin:4px 0 14px; overflow:hidden; text-align:center;
+  }
+  .scroll::before{ content:""; position:absolute; left:50%; top:55%; width:54px; height:54px; transform:translate(-50%,-50%);
+    background:linear-gradient(var(--gold),var(--gold)) center/12px 100% no-repeat,
+               linear-gradient(var(--gold),var(--gold)) center 38%/100% 12px no-repeat;
+    opacity:.10; pointer-events:none; }
+  .kicker{font-family:var(--pixel);font-size:8px;letter-spacing:2px;color:var(--gold);opacity:.85;margin-bottom:14px;position:relative}
+  .name{
+    font-family:var(--serif); font-size:clamp(24px,7vw,34px); line-height:1.12; color:#1b2b52; font-style:normal;
+    letter-spacing:.3px; word-break:break-word;
+    text-shadow:0 1px 0 #fff8e6, 0 0 18px rgba(200,155,60,.35); position:relative; min-height:44px;
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .name.swap{opacity:0;transform:translateY(6px)}
+  .name .num{color:var(--gold);font-feature-settings:"tnum";text-shadow:0 0 10px rgba(200,155,60,.5)}
+  .gloss{font-family:var(--serif);font-size:16px;color:var(--sepia);margin-top:12px;font-style:italic;min-height:22px;position:relative;line-height:1.4}
+  .gloss .ref{font-style:normal;color:#7a5a12;font-weight:bold}
+  .until{font-family:var(--term);font-size:17px;color:#7a6532;margin-top:14px;letter-spacing:.3px;position:relative}
+  .naming-dots{font-family:var(--serif);font-size:34px;color:var(--gold);letter-spacing:6px}
+
+  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .btn{font-family:var(--ui);font-size:13px;font-weight:bold;background:var(--silver);color:#10131a;cursor:pointer;
+    padding:11px 18px;min-height:42px;border:2px solid #fff;border-right-color:#4a5163;border-bottom-color:#4a5163;border-radius:2px}
+  .btn:active{border-color:#4a5163;border-right-color:#fff;border-bottom-color:#fff}
+  .btn:focus-visible{outline:2px solid var(--porch);outline-offset:2px}
+  .btn.go{background:linear-gradient(180deg,var(--gold-lt),var(--gold));color:#3a2a00;border-right-color:#8a6a1f;border-bottom-color:#8a6a1f}
+  .btn.big{font-size:15px;padding:13px 24px}
+
+  .count{text-align:center;font-family:var(--term);font-size:16px;color:#3a414e;margin-top:14px}
+  .count b{color:var(--porch-dk)}
+  .foot{font-size:11.5px;color:#41495a;text-align:center;line-height:1.5;margin-top:12px;border-top:1px solid #aab1c0;padding-top:11px}
+  .foot b{color:var(--porch-dk)}
+
+  .statusbar{display:flex;align-items:center;gap:6px;background:var(--silver);border-top:2px solid #fff;padding:7px 9px;font-size:10px;color:#3a414e}
+  .tiers{display:flex;flex:1;gap:4px;flex-wrap:wrap;align-items:center}
+  .tier{display:flex;align-items:center;gap:4px;white-space:nowrap;opacity:.45}
+  .tier .pip{width:8px;height:8px;border-radius:50%;background:var(--silver);border:1px solid #4a5163}
+  .tier.cur{opacity:1;font-weight:bold;color:var(--porch-dk)}
+  .tier.cur .pip{background:var(--gold-lt);box-shadow:0 0 6px var(--gold-lt)}
+  .tier .arr{color:#7f879a}
+
+  .hidden{display:none}
+  @media (max-width:430px){ .intro .lead{font-size:22px} }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="win" role="application" aria-label="Angel Cloud — The Naming">
+  <div class="titlebar">
+    <span class="dot" aria-hidden="true"></span><span>Angel&nbsp;Cloud — The&nbsp;Naming</span>
+    <span class="grow"></span>
+    <span class="winbtn" aria-hidden="true">_</span><span class="winbtn" aria-hidden="true">▢</span><span class="winbtn" aria-hidden="true">×</span>
+  </div>
+
+  <div class="stage">
+    <section id="intro" class="intro">
+      <div class="lead">You are about to be named.</div>
+      <p>Every soul that enters is <b>given</b> a handle — not chosen, but received — drawn from the <b>Gospels, the books about Jesus</b>: a follower's name, a place He walked, an image from His story. It's <b>sealed with a number</b>, and the number is a hidden <b>passage of hope</b>.</p>
+      <p style="color:#6a7180">Anonymous. Humble. Yours until you are born again.</p>
+      <div class="row" style="margin-top:16px">
+        <button class="btn go big" id="receive">Receive your name ✦</button>
+      </div>
+    </section>
+
+    <section id="naming" class="hidden">
+      <div class="scroll">
+        <div class="kicker">YOU HAVE BEEN NAMED</div>
+        <div class="name" id="name">—</div>
+        <div class="gloss" id="gloss"></div>
+        <div class="until" id="until"></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="again">Receive another</button>
+        <button class="btn go" id="carry">Carry this name →</button>
+      </div>
+      <div class="count" id="count"></div>
+      <div class="foot">
+        This is your <b>New Born</b> handle — your screen name in here, with a hope verse hidden in the number.<br>
+        Earn your wings — be born again — and you'll shed it for your own: <b>Angel[You]</b>.
+      </div>
+    </section>
+  </div>
+
+  <div class="statusbar">
+    <div class="tiers">
+      <span class="tier cur"><span class="pip"></span>New&nbsp;Born</span><span class="arr">›</span>
+      <span class="tier"><span class="pip"></span>Onboarding</span><span class="arr">›</span>
+      <span class="tier"><span class="pip"></span>Halo&nbsp;Verify</span><span class="arr">›</span>
+      <span class="tier"><span class="pip"></span>Born&nbsp;Again ✦</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+
+  /* ---------- the generator (liftable) ---------- */
+  var SRC = {
+    // people from the Gospels / books about Jesus
+    people:['Andrew','Simon','Peter','Cephas','James','John','Philip','Nathanael','Thomas','Matthew',
+            'Levi','Jude','Mary','Martha','Lazarus','Joseph','Zacchaeus','Nicodemus','Jairus','Cleopas',
+            'Joanna','Salome','Elizabeth','Simeon','Gabriel','Stephen','Barnabas','Silas','Timothy','Lydia','Tabitha'],
+    // places Jesus walked
+    places:['Bethlehem','Nazareth','Galilee','Capernaum','Bethany','Bethsaida','Jerusalem','Jericho','Cana',
+            'Gennesaret','Magdala','Emmaus','Jordan','Olivet','Nain','Bethphage','Siloam','Samaria','Judea','Tabor'],
+    // gentle imagery from the Gospel story (kept clear of Christ's own "I AM" titles)
+    words:['Dove','Star','Manger','Pearl','Mustard','Sparrow','Lily','Salt','Sower','Harvest',
+           'Lantern','Olive','Sheaf','Reed','Mercy','Grace','Hope','Faith','Lamp','Brook'],
+    // the number is a passage of hope (ref + handle tail + short gloss, paraphrased)
+    hope:[
+      {ref:'Jeremiah 29:11', tail:'2911', g:'plans to give you a future and a hope'},
+      {ref:'Romans 15:13',   tail:'1513', g:'may you overflow with hope'},
+      {ref:'Romans 5:5',     tail:'55',   g:'hope does not put us to shame'},
+      {ref:'Romans 8:28',    tail:'828',  g:'all things work together for good'},
+      {ref:'Romans 8:24',    tail:'824',  g:'in this hope we were saved'},
+      {ref:'Hebrews 11:1',   tail:'111',  g:'hope is the substance of faith'},
+      {ref:'1 Peter 1:3',    tail:'13',   g:'born again into a living hope'},
+      {ref:'Isaiah 40:31',   tail:'4031', g:'they that hope renew their strength'},
+      {ref:'Lamentations 3:23', tail:'323', g:'His mercies are new every morning'},
+      {ref:'Psalm 39:7',     tail:'397',  g:'my hope is in You'},
+      {ref:'Psalm 71:5',     tail:'715',  g:'You are my hope, O Lord'},
+      {ref:'Psalm 130:5',    tail:'1305', g:'in His word I put my hope'},
+      {ref:'Psalm 42:11',    tail:'4211', g:'hope in God — you will praise Him again'},
+      {ref:'Psalm 27:1',     tail:'271',  g:'the Lord is my light and my salvation'},
+      {ref:'Proverbs 23:18', tail:'2318', g:'your hope will not be cut off'},
+      {ref:'Philippians 1:6',tail:'16',   g:'He will finish the good work in you'},
+      {ref:'John 16:33',     tail:'1633', g:'take heart — He has overcome'},
+      {ref:'Matthew 11:28',  tail:'1128', g:'come to Him, and find rest'},
+      {ref:'Micah 7:7',      tail:'77',   g:'I will look to the Lord and wait'},
+      {ref:'2 Corinthians 4:16', tail:'416', g:'inwardly renewed day by day'}
+    ]
+  };
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+  function generate(){
+    var p=Math.random(), base;
+    if(p<0.55)      base = pick(SRC.people)+'of'+pick(SRC.places);   // PeterofGalilee
+    else if(p<0.85) base = pick(SRC.words)+'of'+pick(SRC.places);    // DoveofJordan, StarofBethlehem
+    else            base = pick(SRC.people);                          // Nathanael
+    var h = pick(SRC.hope);
+    return { base:base, tail:h.tail, handle:base+h.tail, ref:h.ref, gloss:h.g };
+  }
+  function totalNames(){
+    var S=SRC; return (S.people.length*S.places.length + S.words.length*S.places.length + S.people.length);
+  }
+
+  /* ---------- reveal ---------- */
+  var last='';
+  function nextName(){ var g; do{ g=generate(); } while(g.handle===last); last=g.handle; return g; }
+  function paint(g){
+    $('name').innerHTML = g.base + '<span class="num">'+g.tail+'</span>';
+    $('name').classList.remove('swap');
+    $('gloss').innerHTML = '✝ <span class="ref">'+g.ref+'</span> — '+g.gloss;
+    $('until').textContent = '— until you are born again —';
+  }
+  function reveal(animate){
+    var g=nextName();
+    if(animate){
+      $('name').classList.add('swap'); $('gloss').innerHTML=''; $('until').textContent='';
+      $('name').innerHTML='<span class="naming-dots">· · ·</span>';
+      setTimeout(function(){ paint(g); }, 520);
+    } else paint(g);
+  }
+
+  function openNaming(){
+    $('intro').classList.add('hidden');
+    $('naming').classList.remove('hidden');
+    $('count').innerHTML='you are <b>1</b> of <b>'+totalNames().toLocaleString()+'</b> names \u00d7 <b>'+SRC.hope.length+'</b> hopes';
+    reveal(true);
+  }
+  function carry(){
+    var nm=$('name').innerHTML, gl=$('gloss').innerHTML;
+    $('naming').innerHTML =
+      '<div class="scroll"><div class="kicker">YOUR NAME IS GIVEN</div>'+
+      '<div class="name">'+nm+'</div>'+
+      '<div class="gloss">'+gl+'</div>'+
+      '<div class="until">Carry it well.</div></div>'+
+      '<div class="foot">You enter Angel Cloud under this handle — a grounded New Born, hope hidden in your number.<br>'+
+      'When you are born again, the name returns to the well, and you become <b>Angel[You]</b>.</div>';
+  }
+  /* One delegated handler on document. Fires no matter when this script runs
+     relative to the DOM, and survives the file-preview re-rendering the page. */
+  function onTap(e){
+    var t=e.target;
+    var el=(t&&t.id)?t:(t&&t.closest?t.closest('button,[id]'):null);
+    if(!el||!el.id) return;
+    if(el.id==='receive') openNaming();
+    else if(el.id==='again') reveal(true);
+    else if(el.id==='carry') carry();
+  }
+  document.addEventListener('click', onTap, false);
+})();
